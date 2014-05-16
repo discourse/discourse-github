@@ -38,7 +38,7 @@ module ::GithubBadges
                              badge_type_id: 2)
     end
 
-    unless gold = Badge.find_by(name: 'Gmazing contributor')
+    unless gold = Badge.find_by(name: 'Amazing contributor')
       gold = Badge.create!(name: 'Amazing contributor',
                              description: 'contributed 250 accepted pull request',
                              badge_type_id: 1)
