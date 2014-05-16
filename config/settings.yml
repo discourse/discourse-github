@@ -6,3 +6,7 @@ plugins:
     type: list
   github_linkback_access_token:
     default: ''
+
+github_badges:
+  github_badges_repo:
+    default: ''

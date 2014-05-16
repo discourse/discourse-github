@@ -12,3 +12,5 @@ en:
       This pull request has been mentioned on **%{title}**. There might be relevant details there:
 
       %{post_url}
+
+  github_badges_repo: 'URL of the GitHub repo to scan for contributions'
