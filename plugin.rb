@@ -19,7 +19,6 @@ after_initialize do
   end
 end
 
-
 module ::GithubBadges
   def self.badge_grant!
 
