@@ -19,4 +19,10 @@ Follow the [plugin installation guide](https://meta.discourse.org/t/install-a-pl
     - `username/repository` for specific repositories
     - `username/*` for all repositories of a certain user
 
+## github_badges
+
 Assign badges to your users based on GitHub contributions!
+
+##License
+
+MIT
