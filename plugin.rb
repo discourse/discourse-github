@@ -61,29 +61,26 @@ module ::GithubBadges
       emails << (`cd #{path} && git log -1 --format=%ce #{m.split(' ')[1].strip}`.strip)
     end
 
-    email_commits = emails.group_by { |e| e }.map { |k, l| [k, l.count] }
+    email_commits = emails.group_by { |e| e }.map { |k, l| [k, l.count] }.to_h
 
     Rails.logger.info "#{email_commits.length} commits found!"
 
-    email_commits.each do |email, commits|
-      if user = User.find_by(email: email)
+    User.where(email: email_commits.keys).each do |user|
+      commits = email_commits[user.email]
 
-        BadgeGranter.grant(bronze, user)
+      BadgeGranter.grant(bronze, user)
 
-        if commits >= 25
-          BadgeGranter.grant(silver, user)
-          if user.title.blank?
-            user.title = silver.name
-            user.save
-          end
+      if commits >= 25
+        BadgeGranter.grant(silver, user)
+        if user.title.blank?
+          user.update_attributes!(title: silver.name)
         end
+      end
 
-        if commits >= 250
-          BadgeGranter.grant(gold, user)
-          if user.title.blank?
-            user.title = gold.name
-            user.save
-          end
+      if commits >= 250
+        BadgeGranter.grant(gold, user)
+        if user.title.blank?
+          user.update_attributes!(title: gold.name)
         end
       end
     end
