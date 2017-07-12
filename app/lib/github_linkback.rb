@@ -78,7 +78,7 @@ class GithubLinkback
   end
 
   def self.field_for(url)
-    "github-linkback:Digest::SHA1.hexdigest(url)[0..15]"
+    "github-linkback:#{Digest::SHA1.hexdigest(url)[0..15]}"
   end
 
   private
