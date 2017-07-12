@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe GithubLinkback do
-  context ".should_enqueue?" do
+  context "#should_enqueue?" do
 
     let(:post_without_link) { Fabricate.build(:post) }
 
@@ -11,22 +11,22 @@ describe GithubLinkback do
 
     it "returns false when the feature is disabled" do
       SiteSetting.github_linkback_enabled = false
-      expect(GithubLinkback.should_enqueue?(post_with_link)).to eq(false)
+      expect(GithubLinkback.new(post_with_link).should_enqueue?).to eq(false)
     end
 
     it "returns false without a post" do
       SiteSetting.github_linkback_enabled = true
-      expect(GithubLinkback.should_enqueue?(nil)).to eq(false)
+      expect(GithubLinkback.new(nil).should_enqueue?).to eq(false)
     end
 
     it "returns false when the post doesn't have the word github in it" do
       SiteSetting.github_linkback_enabled = true
-      expect(GithubLinkback.should_enqueue?(post_without_link)).to eq(false)
+      expect(GithubLinkback.new(post_without_link).should_enqueue?).to eq(false)
     end
 
     it "returns true when the feature is enabled" do
       SiteSetting.github_linkback_enabled = true
-      expect(GithubLinkback.should_enqueue?(post_with_link)).to eq(true)
+      expect(GithubLinkback.new(post_with_link).should_enqueue?).to eq(true)
     end
 
   end
