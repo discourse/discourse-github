@@ -12,5 +12,9 @@ after_initialize do
   DiscourseEvent.on(:post_created) do |post|
     GithubLinkback.new(post).enqueue
   end
+
+  DiscourseEvent.on(:post_edited) do |post|
+    GithubLinkback.new(post).enqueue
+  end
 end
 
