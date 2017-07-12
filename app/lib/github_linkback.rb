@@ -21,7 +21,8 @@ class GithubLinkback
   def should_enqueue?
     !!(SiteSetting.github_linkback_enabled? &&
       @post.present? &&
-      @post.raw =~ /github/)
+      @post.raw =~ /github/ &&
+      Guardian.new.can_see?(@post))
   end
 
   def enqueue

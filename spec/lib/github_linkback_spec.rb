@@ -50,7 +50,21 @@ describe GithubLinkback do
       SiteSetting.github_linkback_enabled = true
       expect(GithubLinkback.new(post_with_link).should_enqueue?).to eq(true)
     end
+
+    context "private_message" do
+      it "doesn't enqueue private messages" do
+        SiteSetting.github_linkback_enabled = true
+        private_topic = Fabricate(:private_message_topic)
+        private_post = Fabricate(
+          :post,
+          topic: private_topic,
+          raw: "this post http://github.com should not enqueue"
+        )
+        expect(GithubLinkback.new(private_post).should_enqueue?).to eq(false)
+      end
+    end
   end
+
 
   context "#github_urls" do
     it "returns an empty array with no projects" do
