@@ -8,7 +8,13 @@ back to a Discourse post where it is mentioned.
 
 Follow the [plugin installation guide](https://meta.discourse.org/t/install-a-plugin/19157?u=eviltrout).
 
-
 ## After Installation
 
-You need to enable the plugin on Settings -> Plugins
+You need to enable the plugin on Settings -> Plugins.
+
+You can generate an [access token](https://github.com/settings/tokens) on Github.
+Be sure to give it the `public_repo` scope. Paste that token into the
+`github linkback access token` setting.
+
+Finally, add the projects you wish to post to in the `github linkback projects`a
+site setting.

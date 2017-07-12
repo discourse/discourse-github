@@ -3,3 +3,5 @@ plugins:
     default: false
   github_linkback_projects:
     type: list
+  github_linkback_access_token:
+    default: ''

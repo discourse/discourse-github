@@ -1,6 +1,25 @@
 require 'rails_helper'
 
 describe GithubLinkback do
+  let(:github_link) { "https://github.com/discourse/discourse/commit/76981605fa10975e2e7af457e2f6a31909e0c811" }
+
+  let(:post) do
+    Fabricate(
+      :post,
+      raw: <<~RAW
+        cool post
+
+        #{github_link}
+
+        https://eviltrout.com/not-a-gh-link
+
+        #{github_link}
+
+        https://github.com/eviltrout/tis-100/commit/e22b23f354e3a1c31bc7ad37a6a309fd6daf18f4
+      RAW
+    )
+  end
+
 
   context "#should_enqueue?" do
     let(:post_without_link) { Fabricate.build(:post) }
@@ -31,34 +50,58 @@ describe GithubLinkback do
   end
 
   context "#github_urls" do
-    let(:github_link) { "https://github.com/discourse/discourse/commit/76981605fa10975e2e7af457e2f6a31909e0c811" }
-
-    let(:post) do
-      Fabricate(
-        :post,
-        raw: <<~RAW
-          cool post
-
-          #{github_link}
-
-          https://eviltrout.com/not-a-gh-link
-
-          https://github.com/eviltrout/tis-100/commit/e22b23f354e3a1c31bc7ad37a6a309fd6daf18f4
-        RAW
-      )
-    end
-
     it "returns an empty array with no projects" do
       SiteSetting.github_linkback_projects = ""
       links = GithubLinkback.new(post).github_links
       expect(links).to eq([])
     end
 
+    it "doesn't return links that have already been posted" do
+      SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance"
+
+      post.custom_fields[GithubLinkback.field_for(github_link)] = "true"
+      post.save_custom_fields
+
+      links = GithubLinkback.new(post).github_links
+      expect(links.size).to eq(0)
+    end
+
     it "should return the urls for the selected projects" do
       SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance"
       links = GithubLinkback.new(post).github_links
       expect(links.size).to eq(1)
-      expect(links).to include(github_link)
+      expect(links[0].url).to eq(github_link)
+      expect(links[0].project).to eq("discourse/discourse")
+      expect(links[0].sha).to eq("76981605fa10975e2e7af457e2f6a31909e0c811")
+    end
+  end
+
+  context "#create" do
+    before do
+      SiteSetting.github_linkback_projects = "discourse/discourse"
+    end
+
+    it "returns an empty array without an access token" do
+      expect(GithubLinkback.new(post).create).to be_blank
+    end
+
+    context "with an access token" do
+      before do
+        SiteSetting.github_linkback_access_token = "abcdef"
+
+        stub_request(:post, "https://api.github.com/repos/discourse/discourse/commits/76981605fa10975e2e7af457e2f6a31909e0c811/comments").
+          with(headers: {'Authorization'=>'token abcdef', 'Content-Type'=>'application/json', 'Host'=>'api.github.com', 'User-Agent'=>'Discourse-Github-Linkback'}).
+          to_return(status: 200, body: "", headers: {})
+      end
+
+      it "returns the URL it linked to and custom fields" do
+        links = GithubLinkback.new(post).create
+        expect(links.size).to eq(1)
+        expect(links[0].url).to eq(github_link)
+
+        field = GithubLinkback.field_for(github_link)
+        expect(post.custom_fields[field]).to be_present
+      end
     end
   end
 
