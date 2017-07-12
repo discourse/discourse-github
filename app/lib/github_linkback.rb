@@ -17,8 +17,15 @@ class GithubLinkback
   end
 
   def github_links
+    projects = (SiteSetting.github_linkback_projects || "").split('|')
+    return [] if projects.blank?
+
     PrettyText.extract_links(@post.cooked).map(&:url).find_all do |l|
-      l =~ /github\.com/
+      if l =~ /https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/commit\/([0-9a-f]+)/
+        projects.include?("#{Regexp.last_match[1]}/#{Regexp.last_match[2]}")
+      else
+        false
+      end
     end
   end
 

@@ -1,3 +1,5 @@
 plugins:
   github_linkback_enabled:
     default: false
+  github_linkback_projects:
+    type: list

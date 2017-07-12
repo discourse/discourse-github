@@ -42,13 +42,22 @@ describe GithubLinkback do
           #{github_link}
 
           https://eviltrout.com/not-a-gh-link
+
+          https://github.com/eviltrout/tis-100/commit/e22b23f354e3a1c31bc7ad37a6a309fd6daf18f4
         RAW
       )
     end
 
-    it "should return the urls" do
-      lb = GithubLinkback.new(post)
-      links = lb.github_links
+    it "returns an empty array with no projects" do
+      SiteSetting.github_linkback_projects = ""
+      links = GithubLinkback.new(post).github_links
+      expect(links).to eq([])
+    end
+
+    it "should return the urls for the selected projects" do
+      SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance"
+      links = GithubLinkback.new(post).github_links
+      expect(links.size).to eq(1)
       expect(links).to include(github_link)
     end
   end
