@@ -4,12 +4,13 @@ require 'digest/sha1'
 class GithubLinkback
 
   class Link
-    attr_reader :url, :project, :sha
+    attr_reader :url, :project, :type
+    attr_accessor :sha, :pr_number
 
-    def initialize(url, project, sha)
+    def initialize(url, project, type)
       @url = url
       @project = project
-      @sha = sha
+      @type = type
     end
   end
 
@@ -34,18 +35,21 @@ class GithubLinkback
     return result if projects.blank?
 
     PrettyText.extract_links(@post.cooked).map(&:url).uniq.each do |l|
+      next if @post.custom_fields[GithubLinkback.field_for(l)].present?
+
       if l =~ /https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/commit\/([0-9a-f]+)/
-
-        next if @post.custom_fields[GithubLinkback.field_for(l)].present?
-
         project = "#{Regexp.last_match[1]}/#{Regexp.last_match[2]}"
-
         if projects.include?(project)
-          result << Link.new(
-            Regexp.last_match[0],
-            project,
-            Regexp.last_match[3]
-          )
+          link = Link.new(Regexp.last_match[0], project, :commit)
+          link.sha = Regexp.last_match[3]
+          result << link
+        end
+      elsif l =~ /https?:\/\/github.com\/([^\/]+)\/([^\/]+)\/pull\/(\d+)/
+        project = "#{Regexp.last_match[1]}/#{Regexp.last_match[2]}"
+        if projects.include?(project)
+          link = Link.new(Regexp.last_match[0], project, :pr)
+          link.pr_number = Regexp.last_match[3].to_i
+          result << link
         end
       end
     end
@@ -57,22 +61,13 @@ class GithubLinkback
 
     links = github_links
     links.each do |link|
-      github_url = "https://api.github.com/repos/#{link.project}/commits/#{link.sha}/comments"
+      next unless [:commit, :pr].include?(link.type)
 
-      comment = I18n.t('github_linkback.commit_template',
-        title: SiteSetting.title,
-        post_url: "#{Discourse.base_url}#{@post.url}"
-      )
-
-      Excon.post(
-        github_url,
-        body: { body: comment }.to_json,
-        headers: {
-          "Content-Type" => "application/json",
-          "Authorization" => "token #{SiteSetting.github_linkback_access_token}",
-          "User-Agent" => "Discourse-Github-Linkback"
-        }
-      )
+      if link.type == :commit
+        post_commit(link)
+      elsif link.type == :pr
+        post_pr(link)
+      end
 
       # Don't post the same link twice
       @post.custom_fields[GithubLinkback.field_for(link.url)] = 'true'
@@ -82,8 +77,50 @@ class GithubLinkback
     links
   end
 
-
   def self.field_for(url)
     "github-linkback:Digest::SHA1.hexdigest(url)[0..15]"
   end
+
+  private
+
+    def post_pr(link)
+      github_url = "https://api.github.com/repos/#{link.project}/issues/#{link.pr_number}/comments"
+      comment = I18n.t(
+        'github_linkback.pr_template',
+        title: SiteSetting.title,
+        post_url: "#{Discourse.base_url}#{@post.url}"
+      )
+
+      Excon.post(
+        github_url,
+        body: { body: comment }.to_json,
+        headers: headers
+      )
+    end
+
+    def post_commit(link)
+      github_url = "https://api.github.com/repos/#{link.project}/commits/#{link.sha}/comments"
+
+      comment = I18n.t(
+        'github_linkback.commit_template',
+        title: SiteSetting.title,
+        post_url: "#{Discourse.base_url}#{@post.url}"
+      )
+
+      Excon.post(
+        github_url,
+        body: { body: comment }.to_json,
+        headers: headers
+      )
+    end
+
+    def headers
+      {
+        "Content-Type" => "application/json",
+        "Authorization" => "token #{SiteSetting.github_linkback_access_token}",
+        "User-Agent" => "Discourse-Github-Linkback"
+      }
+    end
+
+
 end

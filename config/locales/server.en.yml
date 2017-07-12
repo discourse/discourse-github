@@ -8,3 +8,7 @@ en:
       This commit has been mentioned on **%{title}**. There might be relevant details there:
 
       %{post_url}
+    pr_template: |
+      This pull request has been mentioned on **%{title}**. There might be relevant details there:
+
+      %{post_url}
