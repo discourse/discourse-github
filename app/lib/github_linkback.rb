@@ -31,10 +31,10 @@ class GithubLinkback
   def github_links
     projects = (SiteSetting.github_linkback_projects || "").split('|')
 
-    result = []
-    return result if projects.blank?
+    return [] if projects.blank?
 
-    PrettyText.extract_links(@post.cooked).map(&:url).uniq.each do |l|
+    result = {}
+    PrettyText.extract_links(@post.cooked).map(&:url).each do |l|
       next if @post.custom_fields[GithubLinkback.field_for(l)].present?
 
       if l =~ /https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/commit\/([0-9a-f]+)/
@@ -42,18 +42,18 @@ class GithubLinkback
         if projects.include?(project)
           link = Link.new(Regexp.last_match[0], project, :commit)
           link.sha = Regexp.last_match[3]
-          result << link
+          result[link.url] = link
         end
       elsif l =~ /https?:\/\/github.com\/([^\/]+)\/([^\/]+)\/pull\/(\d+)/
         project = "#{Regexp.last_match[1]}/#{Regexp.last_match[2]}"
         if projects.include?(project)
           link = Link.new(Regexp.last_match[0], project, :pr)
           link.pr_number = Regexp.last_match[3].to_i
-          result << link
+          result[link.url] = link
         end
       end
     end
-    result
+    result.values
   end
 
   def create

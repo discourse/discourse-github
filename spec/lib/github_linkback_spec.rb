@@ -63,6 +63,7 @@ describe GithubLinkback do
       SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance"
 
       post.custom_fields[GithubLinkback.field_for(github_commit_link)] = "true"
+      post.custom_fields[GithubLinkback.field_for(github_pr_link)] = "true"
       post.save_custom_fields
 
       links = GithubLinkback.new(post).github_links
