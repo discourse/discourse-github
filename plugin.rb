@@ -6,10 +6,11 @@
 enabled_site_setting :github_linkback_enabled
 
 after_initialize do
+  require_dependency File.expand_path('../app/lib/github_linkback.rb', __FILE__)
   require_dependency File.expand_path('../app/jobs/regular/create_github_linkback.rb', __FILE__)
 
   DiscourseEvent.on(:post_created) do |post|
-    if SiteSetting.github_linkback_enabled?
+    if GithubLinkback.should_enqueue?(post)
       Jobs.enqueue(:create_github_linkback, post_id: post.id)
     end
   end
