@@ -23,7 +23,6 @@ describe GithubLinkback do
     )
   end
 
-
   context "#should_enqueue?" do
     let(:post_without_link) { Fabricate.build(:post) }
 
@@ -63,8 +62,20 @@ describe GithubLinkback do
         expect(GithubLinkback.new(private_post).should_enqueue?).to eq(false)
       end
     end
-  end
 
+    context "unlisted topics" do
+      it "doesn't enqueue unlisted topics" do
+        SiteSetting.github_linkback_enabled = true
+        unlisted_topic = Fabricate(:topic, visible: false)
+        unlisted_post = Fabricate(
+          :post,
+          topic: unlisted_topic,
+          raw: "this post http://github.com should not enqueue"
+        )
+        expect(GithubLinkback.new(unlisted_post).should_enqueue?).to eq(false)
+      end
+    end
+  end
 
   context "#github_urls" do
     it "returns an empty array with no projects" do
@@ -112,7 +123,10 @@ describe GithubLinkback do
 
     context "with an access token" do
       let(:headers) {
-        {'Authorization'=>'token abcdef', 'Content-Type'=>'application/json', 'Host'=>'api.github.com', 'User-Agent'=>'Discourse-Github-Linkback'}
+        { 'Authorization' => 'token abcdef',
+          'Content-Type' => 'application/json',
+          'Host' => 'api.github.com',
+          'User-Agent' => 'Discourse-Github-Linkback' }
       }
 
       before do
@@ -123,8 +137,8 @@ describe GithubLinkback do
           to_return(status: 200, body: "", headers: {})
 
         stub_request(:post, "https://api.github.com/repos/discourse/discourse/issues/701/comments").
-           with(headers: headers).
-           to_return(status: 200, body: "", headers: {})
+          with(headers: headers).
+          to_return(status: 200, body: "", headers: {})
       end
 
       it "returns the URL it linked to and custom fields" do

@@ -22,7 +22,8 @@ class GithubLinkback
     !!(SiteSetting.github_linkback_enabled? &&
       @post.present? &&
       @post.raw =~ /github/ &&
-      Guardian.new.can_see?(@post))
+      Guardian.new.can_see?(@post) &&
+      @post.topic.visible?)
   end
 
   def enqueue
@@ -122,6 +123,5 @@ class GithubLinkback
         "User-Agent" => "Discourse-Github-Linkback"
       }
     end
-
 
 end
