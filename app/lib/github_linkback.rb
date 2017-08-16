@@ -31,7 +31,7 @@ class GithubLinkback
   end
 
   def github_links
-    projects = (SiteSetting.github_linkback_projects || "").split('|')
+    projects = SiteSetting.github_linkback_projects.split('|')
 
     return [] if projects.blank?
 
