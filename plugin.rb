@@ -65,7 +65,7 @@ module ::GithubBadges
 
     Rails.logger.info "#{email_commits.length} commits found!"
 
-    User.joins('join user_emails on user_emails.user_id = users.id').where(email: email_commits.keys).each do |user|
+    User.with_email(email_commits.keys).each do |user|
       commits = email_commits[user.email]
 
       BadgeGranter.grant(bronze, user)
