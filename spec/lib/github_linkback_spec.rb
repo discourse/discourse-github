@@ -3,6 +3,7 @@ require 'rails_helper'
 describe GithubLinkback do
   let(:github_commit_link) { "https://github.com/discourse/discourse/commit/76981605fa10975e2e7af457e2f6a31909e0c811" }
   let(:github_pr_link) { "https://github.com/discourse/discourse/pull/701" }
+  let(:github_pr_link_wildcard) { "https://github.com/discourse/discourse-github-linkback/pull/3" }
 
   let(:post) do
     Fabricate(
@@ -19,6 +20,13 @@ describe GithubLinkback do
         https://github.com/eviltrout/tis-100/commit/e22b23f354e3a1c31bc7ad37a6a309fd6daf18f4
 
         #{github_pr_link}
+
+        i have no idea what i'm linking back to 
+
+        #{github_pr_link_wildcard}
+
+        end_of_transmission
+
       RAW
     )
   end
@@ -85,10 +93,11 @@ describe GithubLinkback do
     end
 
     it "doesn't return links that have already been posted" do
-      SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance"
+      SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance|discourse/*"
 
       post.custom_fields[GithubLinkback.field_for(github_commit_link)] = "true"
       post.custom_fields[GithubLinkback.field_for(github_pr_link)] = "true"
+      post.custom_fields[GithubLinkback.field_for(github_pr_link_wildcard)] = "true"
       post.save_custom_fields
 
       links = GithubLinkback.new(post).github_links
@@ -96,9 +105,9 @@ describe GithubLinkback do
     end
 
     it "should return the urls for the selected projects" do
-      SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance"
+      SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance|discourse/*"
       links = GithubLinkback.new(post).github_links
-      expect(links.size).to eq(2)
+      expect(links.size).to eq(3)
 
       expect(links[0].url).to eq(github_commit_link)
       expect(links[0].project).to eq("discourse/discourse")
@@ -109,12 +118,17 @@ describe GithubLinkback do
       expect(links[1].project).to eq("discourse/discourse")
       expect(links[1].pr_number).to eq(701)
       expect(links[1].type).to eq(:pr)
+
+      expect(links[2].url).to eq(github_pr_link_wildcard)
+      expect(links[2].project).to eq("discourse/discourse-github-linkback")
+      expect(links[2].pr_number).to eq(3)
+      expect(links[2].type).to eq(:pr)
     end
   end
 
   context "#create" do
     before do
-      SiteSetting.github_linkback_projects = "discourse/discourse"
+      SiteSetting.github_linkback_projects = "discourse/discourse|discourse/*"
     end
 
     it "returns an empty array without an access token" do
