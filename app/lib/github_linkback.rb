@@ -41,14 +41,14 @@ class GithubLinkback
 
       if l =~ /https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/commit\/([0-9a-f]+)/
         project = "#{Regexp.last_match[1]}/#{Regexp.last_match[2]}"
-        if projects.include?(project)
+        if is_allowed_project_link(projects, project)
           link = Link.new(Regexp.last_match[0], project, :commit)
           link.sha = Regexp.last_match[3]
           result[link.url] = link
         end
       elsif l =~ /https?:\/\/github.com\/([^\/]+)\/([^\/]+)\/pull\/(\d+)/
         project = "#{Regexp.last_match[1]}/#{Regexp.last_match[2]}"
-        if projects.include?(project)
+        if is_allowed_project_link(projects, project)
           link = Link.new(Regexp.last_match[0], project, :pr)
           link.pr_number = Regexp.last_match[3].to_i
           result[link.url] = link
@@ -56,6 +56,23 @@ class GithubLinkback
       end
     end
     result.values
+  end
+
+  def is_allowed_project_link(projects, project)
+    wildcard = '*'
+    if projects.include?(project)
+      return true
+    else
+      check_user = project.split('/')[0]
+      projects.each {|allowed_project|
+        allowed_user = allowed_project.split('/')[0]
+        allowed_all_projects = allowed_project.split('/')[1]
+        if allowed_user == check_user && allowed_all_projects == wildcard
+          return true
+        end
+      }
+    end
+    return false
   end
 
   def create
