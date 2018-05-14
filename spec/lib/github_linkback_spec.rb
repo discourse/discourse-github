@@ -157,7 +157,7 @@ describe GithubLinkback do
 
       it "returns the URL it linked to and custom fields" do
         links = GithubLinkback.new(post).create
-        expect(links.size).to eq(2)
+        expect(links.size).to eq(3)
 
         expect(links[0].url).to eq(github_commit_link)
         field = GithubLinkback.field_for(github_commit_link)
@@ -165,6 +165,10 @@ describe GithubLinkback do
 
         expect(links[1].url).to eq(github_pr_link)
         field = GithubLinkback.field_for(github_pr_link)
+        expect(post.custom_fields[field]).to be_present
+
+        expect(links[2].url).to eq(github_pr_link_wildcard)
+        field = GithubLinkback.field_for(github_pr_link_wildcard)
         expect(post.custom_fields[field]).to be_present
       end
     end
