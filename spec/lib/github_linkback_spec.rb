@@ -153,6 +153,11 @@ describe GithubLinkback do
         stub_request(:post, "https://api.github.com/repos/discourse/discourse/issues/701/comments").
           with(headers: headers).
           to_return(status: 200, body: "", headers: {})
+
+        stub_request(:post, "https://api.github.com/repos/discourse/discourse-github-linkback/issues/3/comments").
+          with(headers: headers).
+          to_return(status: 200, body: "", headers: {})
+
       end
 
       it "returns the URL it linked to and custom fields" do
