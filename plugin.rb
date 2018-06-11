@@ -2,6 +2,7 @@
 # about: Links Github content back to a Discourse discussion
 # version: 0.1
 # authors: Robin Ward
+# url: https://github.com/discourse/discourse-github-linkback
 
 enabled_site_setting :github_linkback_enabled
 
