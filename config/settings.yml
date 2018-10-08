@@ -6,7 +6,9 @@ plugins:
     type: list
   github_linkback_access_token:
     default: ''
-
-github_badges:
+  github_badges_enabled:
+    default: false
   github_badges_repo:
     default: ''
+  github_permalinks_enabled:
+    default: false

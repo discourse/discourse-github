@@ -95,43 +95,43 @@ class GithubLinkback
 
   private
 
-    def post_pr(link)
-      github_url = "https://api.github.com/repos/#{link.project}/issues/#{link.pr_number}/comments"
-      comment = I18n.t(
-        'github_linkback.pr_template',
-        title: SiteSetting.title,
-        post_url: "#{Discourse.base_url}#{@post.url}"
-      )
+  def post_pr(link)
+    github_url = "https://api.github.com/repos/#{link.project}/issues/#{link.pr_number}/comments"
+    comment = I18n.t(
+      'github_linkback.pr_template',
+      title: SiteSetting.title,
+      post_url: "#{Discourse.base_url}#{@post.url}"
+    )
 
-      Excon.post(
-        github_url,
-        body: { body: comment }.to_json,
-        headers: headers
-      )
-    end
+    Excon.post(
+      github_url,
+      body: { body: comment }.to_json,
+      headers: headers
+    )
+  end
 
-    def post_commit(link)
-      github_url = "https://api.github.com/repos/#{link.project}/commits/#{link.sha}/comments"
+  def post_commit(link)
+    github_url = "https://api.github.com/repos/#{link.project}/commits/#{link.sha}/comments"
 
-      comment = I18n.t(
-        'github_linkback.commit_template',
-        title: SiteSetting.title,
-        post_url: "#{Discourse.base_url}#{@post.url}"
-      )
+    comment = I18n.t(
+      'github_linkback.commit_template',
+      title: SiteSetting.title,
+      post_url: "#{Discourse.base_url}#{@post.url}"
+    )
 
-      Excon.post(
-        github_url,
-        body: { body: comment }.to_json,
-        headers: headers
-      )
-    end
+    Excon.post(
+      github_url,
+      body: { body: comment }.to_json,
+      headers: headers
+    )
+  end
 
-    def headers
-      {
-        "Content-Type" => "application/json",
-        "Authorization" => "token #{SiteSetting.github_linkback_access_token}",
-        "User-Agent" => "Discourse-Github-Linkback"
-      }
-    end
+  def headers
+    {
+      "Content-Type" => "application/json",
+      "Authorization" => "token #{SiteSetting.github_linkback_access_token}",
+      "User-Agent" => "Discourse-Github-Linkback"
+    }
+  end
 
 end
