@@ -21,7 +21,7 @@ describe GithubLinkback do
 
         #{github_pr_link}
 
-        i have no idea what i'm linking back to 
+        i have no idea what i'm linking back to
 
         #{github_pr_link_wildcard}
 
