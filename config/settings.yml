@@ -12,3 +12,9 @@ plugins:
     default: ''
   github_permalinks_enabled:
     default: false
+  github_silver_badge_min_commits:
+    default: 25
+    min: 1
+  github_gold_badge_min_commits:
+    default: 250
+    min: 1

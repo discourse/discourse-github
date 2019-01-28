@@ -48,14 +48,14 @@ module ::GithubBadges
 
       BadgeGranter.grant(bronze, user)
 
-      if commits >= 25
+      if commits >= SiteSetting.github_silver_badge_min_commits
         BadgeGranter.grant(silver, user)
         if user.title.blank?
           user.update_attributes!(title: silver.name)
         end
       end
 
-      if commits >= 250
+      if commits >= SiteSetting.github_gold_badge_min_commits
         BadgeGranter.grant(gold, user)
         if user.title.blank?
           user.update_attributes!(title: gold.name)
