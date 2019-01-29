@@ -2,6 +2,7 @@ require 'rails_helper'
 require 'jobs/regular/pull_hotlinked_images'
 
 describe Jobs::ReplaceGithubNonPermalinks do
+  let(:job) { described_class.new }
   let(:github_url) { "https://github.com/test/onebox/blob/master/lib/onebox/engine/github_blob_onebox.rb" }
   let(:github_permanent_url) { "https://github.com/test/onebox/blob/815ea9c0a8ffebe7bd7fcd34c10ff28c7a6b6974/lib/onebox/engine/github_blob_onebox.rb" }
   let(:github_url2) { "https://github.com/test/discourse/blob/master/app/models/tag.rb#L1-L3" }
@@ -29,7 +30,7 @@ describe Jobs::ReplaceGithubNonPermalinks do
 
     it 'replaces link with permanent link' do
       post = Fabricate(:post, raw: "#{github_url}")
-      Jobs::ReplaceGithubNonPermalinks.new.execute(post_id: post.id)
+      job.execute(post_id: post.id)
       post.reload
 
       expect(post.raw).to eq(github_permanent_url)
@@ -37,7 +38,7 @@ describe Jobs::ReplaceGithubNonPermalinks do
 
     it "doesn't replace the link if it's already permanent" do
       post = Fabricate(:post, raw: github_permanent_url)
-      Jobs::ReplaceGithubNonPermalinks.new.execute(post_id: post.id)
+      job.execute(post_id: post.id)
       post.reload
 
       expect(post.raw).to eq(github_permanent_url)
@@ -45,7 +46,7 @@ describe Jobs::ReplaceGithubNonPermalinks do
 
     it "doesn't change the post if link is broken" do
       post = Fabricate(:post, raw: broken_github_url)
-      Jobs::ReplaceGithubNonPermalinks.new.execute(post_id: post.id)
+      job.execute(post_id: post.id)
       post.reload
 
       expect(post.raw).to eq(broken_github_url)
@@ -53,11 +54,31 @@ describe Jobs::ReplaceGithubNonPermalinks do
 
     it "works with multiple github urls in the post" do
       post = Fabricate(:post, raw: "#{github_url} #{github_url2} htts://github.com")
-      Jobs::ReplaceGithubNonPermalinks.new.execute(post_id: post.id)
+      job.execute(post_id: post.id)
       post.reload
 
       updated_post = "#{github_permanent_url} #{github_permanent_url2} htts://github.com"
       expect(post.raw).to eq(updated_post)
+    end
+  end
+
+  describe "#excluded?" do
+    before do
+      SiteSetting.github_permalinks_exclude = "README.md|discourse/discourse/directory/file.rb|discourse/onebox/docs/*|discourse/anotherRepo/*|someUser/*"
+    end
+
+    it 'returns true when it should be excluded'  do
+      expect(job.excluded?("discourse", "discourse", "README.md")).to be true
+      expect(job.excluded?("discourse", "discourse", "directory/file.rb")).to be true
+      expect(job.excluded?("discourse", "onebox", "docs/file.rb")).to be true
+      expect(job.excluded?("discourse", "anotherRepo", "directory/file.rb")).to be true
+      expect(job.excluded?("someUser", "someRepo", "file.rb")).to be true
+    end
+
+    it 'return false when url should be replaced' do
+      expect(job.excluded?("discourse", "discourse", "directory/file2.rb")).to be false
+      expect(job.excluded?("discourse", "onebox", "directory/file.rb")).to be false
+      expect(job.excluded?("discourse", "discourse", "directory/included.rb")).to be false
     end
   end
 end

@@ -12,6 +12,9 @@ plugins:
     default: ''
   github_permalinks_enabled:
     default: false
+  github_permalinks_exclude:
+    default: "README.md"
+    type: list
   github_silver_badge_min_commits:
     default: 25
     min: 1

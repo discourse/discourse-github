@@ -23,6 +23,8 @@ module Jobs
 
       matches = post.raw.scan(regex)
       matches.each do |user, repo, sha1, file, from_to|
+        next if excluded?(user, repo, file)
+
         begin
           api_url = "https://api.github.com/repos/#{user}/#{repo}/commits/#{sha1}"
           json = api_request(api_url)
@@ -43,6 +45,26 @@ module Jobs
         changes = { raw: raw, edit_reason: I18n.t("replace_github_link.edit_reason") }
         post.revise(Discourse.system_user, changes, bypass_bump: true)
       end
+    end
+
+    def excluded?(user, repo, file)
+      excluded = SiteSetting.github_permalinks_exclude.split("|")
+
+      excluded.each do |e|
+        path_parts = e.split("/")
+        # when only filename is provided
+        if path_parts.length == 1
+          return true if file == e
+          next
+        end
+
+        path_parts.each { |p| p.sub!("*", "\\S+") }
+
+        regex = Regexp.new(path_parts.join("\/"))
+        return true if "#{user}/#{repo}/#{file}".match(regex)
+      end
+
+      false
     end
 
     private
