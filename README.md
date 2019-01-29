@@ -39,3 +39,9 @@ Replace Github non-permalinks with [permalinks](https://help.github.com/articles
 #### How to use:
 
 1. Enable `github permalinks enabled` in Settings -> Plugins.
+2. If you want to exclude certain files or directories from permalink overwrites, you can modify that in the `github permalinks exclude` site setting in the following formats:
+   - `filename` links to all files with matching filename
+   - `username/*` links to all repositories belonging to the user/organization
+   - `username/repository/*` links to any file in the repository
+   - `username/repository/directory/*` links to any file in the directory within repository
+   - `username/repository/file.rb` a specific file
