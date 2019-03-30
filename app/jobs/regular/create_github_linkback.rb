@@ -2,7 +2,8 @@ module Jobs
   class CreateGithubLinkback < Jobs::Base
     def execute(args)
       return unless SiteSetting.github_linkback_enabled?
-      GithubLinkback.new(Post.find(args[:post_id])).create
+      return if (post = Post.find_by_id(args[:post_id])).blank?
+      GithubLinkback.new(post).create
     end
   end
 end
