@@ -72,18 +72,23 @@ class GithubLinkback
   def create
     return [] unless SiteSetting.github_linkback_access_token.present?
 
-    links = github_links
-    links.each do |link|
-      next unless [:commit, :pr].include?(link.type)
+    links = []
 
-      if link.type == :commit
-        post_commit(link)
-      elsif link.type == :pr
-        post_pr(link)
+    DistributedMutex.synchronize("github_linkback_#{@post.id}") do
+      links = github_links
+      links.each do |link|
+        case link.type
+        when :commit
+          post_commit(link)
+        when :pr
+          post_pr(link)
+        else
+          next
+        end
+
+        # Don't post the same link twice
+        @post.custom_fields[GithubLinkback.field_for(link.url)] = 'true'
       end
-
-      # Don't post the same link twice
-      @post.custom_fields[GithubLinkback.field_for(link.url)] = 'true'
       @post.save_custom_fields
     end
 
