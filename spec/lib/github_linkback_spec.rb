@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe GithubLinkback do
   let(:github_commit_link) { "https://github.com/discourse/discourse/commit/76981605fa10975e2e7af457e2f6a31909e0c811" }
+  let(:github_commit_link_with_anchor) { "https://github.com/discourse/discourse/commit/76981605fa10975e2e7af457e2f6a31909e0c811#anchor" }
   let(:github_pr_link) { "https://github.com/discourse/discourse/pull/701" }
   let(:github_pr_link_wildcard) { "https://github.com/discourse/discourse-github-linkback/pull/3" }
 
@@ -16,6 +17,8 @@ describe GithubLinkback do
         https://eviltrout.com/not-a-gh-link
 
         #{github_commit_link}
+
+        #{github_commit_link_with_anchor}
 
         https://github.com/eviltrout/tis-100/commit/e22b23f354e3a1c31bc7ad37a6a309fd6daf18f4
 
@@ -85,7 +88,7 @@ describe GithubLinkback do
     end
   end
 
-  context "#github_urls" do
+  context "#github_links" do
     it "returns an empty array with no projects" do
       SiteSetting.github_linkback_projects = ""
       links = GithubLinkback.new(post).github_links

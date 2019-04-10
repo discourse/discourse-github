@@ -37,6 +37,7 @@ class GithubLinkback
 
     result = {}
     PrettyText.extract_links(@post.cooked).map(&:url).each do |l|
+      l = l.split('#')[0]
       next if @post.custom_fields[GithubLinkback.field_for(l)].present?
 
       if l =~ /https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/commit\/([0-9a-f]+)/
