@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ::GithubBadges
   class UpdateJob < ::Jobs::Scheduled
     every 1.day

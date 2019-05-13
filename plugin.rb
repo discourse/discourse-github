@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # name: discourse-github
 # about: Github Linkback, Github Badges, Github Permalinks
 # version: 0.1

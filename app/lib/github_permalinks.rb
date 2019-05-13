@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ::GithubPermalinks
   def self.replace_github_non_permalinks(post)
     # replaces github non-permalinks with permalinks containing a specific commit id
