@@ -8,6 +8,7 @@ describe GithubBadges do
 
   let(:bronze_user) { Fabricate(:user) }
   let(:silver_user) { Fabricate(:user) }
+  let(:co_author) { Fabricate(:user) }
 
   before do
     SiteSetting.github_badges_repo = "https://github.com/org/repo.git"
@@ -18,7 +19,7 @@ describe GithubBadges do
       `git config user.email '#{bronze_user.email}'`
       `git config user.name '#{bronze_user.username}'`
       `echo $RANDOM > file && git add file`
-      `git commit -am "Commit"`
+      `git commit -am "Commit\n\nCo-authored-by: #{co_author.username} <#{co_author.email}>"`
       `git config user.email '#{silver_user.email}'`
       `git config user.name '#{silver_user.username}'`
       25.times do |n|
@@ -39,6 +40,7 @@ describe GithubBadges do
     GithubBadges.badge_grant!
     bronze_user.badges.destroy_all
     silver_user.badges.destroy_all
+    co_author.badges.destroy_all
 
     [
       GithubBadges::COMMITER_BADGE_NAME_BRONZE,
@@ -50,7 +52,9 @@ describe GithubBadges do
     GithubBadges.badge_grant!
     bronze_user.reload
     silver_user.reload
+    co_author.reload
     expect(bronze_user.badges.pluck(:name)).to eq([GithubBadges::COMMITER_BADGE_NAME_BRONZE])
+    expect(co_author.badges.pluck(:name)).to eq([GithubBadges::COMMITER_BADGE_NAME_BRONZE])
     expect(silver_user.badges.pluck(:name)).to contain_exactly(GithubBadges::COMMITER_BADGE_NAME_BRONZE, GithubBadges::COMMITER_BADGE_NAME_SILVER)
   end
 end

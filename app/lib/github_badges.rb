@@ -115,11 +115,8 @@ module ::GithubBadges
 
     emails = []
     Dir.chdir(self.TMP_DIR) do
-      `git log --no-merges --pretty=format:%H`.each_line do |h|
-        emails << (`git log -1 --format=%ae #{h}`.strip)
-        message = `git log -1 --format=%b #{h}`.strip
-        message.scan(/co-authored-by:.+<(.+@.+)>/i).flatten.each { |e| emails << e }
-      end
+      emails.concat(`git log --no-merges --format=%ae`.split("\n"))
+      emails.concat(`git log --no-merges --format=%b | grep -Poi 'co-authored-by:.*<\\K(.*)(?=>)'`.split("\n"))
     end
 
     granter = GithubBadges::Granter.new(emails)
