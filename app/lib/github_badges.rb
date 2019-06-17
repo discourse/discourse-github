@@ -82,8 +82,10 @@ module ::GithubBadges
         end
       end
 
-      exec("git log --merges --pretty=format:%p --grep='Merge pull request'", chdir: dir).each_line do |m|
-        emails << (exec("git log -1 --format=%ce #{m.split(' ')[1].strip}", chdir: dir).strip)
+      Dir.chdir(dir) do
+        `git log --merges --pretty=format:%p --grep='Merge pull request'`.each_line do |m|
+          emails << (`git log -1 --format=%ce #{m.split(' ')[1].strip}`.strip)
+        end
       end
     end
 
@@ -121,8 +123,10 @@ module ::GithubBadges
     emails = []
     SiteSetting.github_badges_repos.split("|").each do |repo|
       dir = path_to_repo(repo)
-      emails.concat(exec("git log --no-merges --format=%ae", chdir: dir).split("\n"))
-      emails.concat(exec("git log --no-merges --format=%b | grep -Poi 'co-authored-by:.*<\\K(.*)(?=>)'", chdir: dir).split("\n"))
+      Dir.chdir(dir) do
+        emails.concat(`git log --no-merges --format=%ae`.split("\n"))
+        emails.concat(`git log --no-merges --format=%b | grep -Poi 'co-authored-by:.*<\\K(.*)(?=>)'`.split("\n"))
+      end
     end
 
     granter = GithubBadges::Granter.new(emails)
@@ -141,9 +145,5 @@ module ::GithubBadges
     URI::HTTP === uri || URI::HTTPS === uri
   rescue URI::Error
     false
-  end
-
-  def self.exec(command, chdir:)
-    Discourse::Utils.execute_command(command, chdir: chdir)
   end
 end
