@@ -11,74 +11,76 @@ describe GithubBadges do
   let(:co_author) { Fabricate(:user) }
   let(:contributer) { Fabricate(:user) }
 
-  before do
-    tmp = GithubBadges.TMP_DIR = File.join(Dir.tmpdir, SecureRandom.hex)
-    SiteSetting.github_badges_repos = "https://github.com/org/repo1.git|https://github.com/org/repo2.git"
-    repos = SiteSetting.github_badges_repos.split("|")
+  def exec(command)
+    GithubBadges.exec(command, chdir: @dir)
+  end
 
-    dir = GithubBadges.path_to_repo(repos[0])
-    FileUtils.mkdir_p(dir)
-    Dir.chdir(dir) do
-      `git init .`
-      `git config user.email '#{bronze_user.email}'`
-      `git config user.name '#{bronze_user.username}'`
-      `echo $RANDOM > file && git add file`
-      `git commit -am "Commit\n\nCo-authored-by: #{co_author.username} <#{co_author.email}>"`
-      `git config user.email '#{silver_user.email}'`
-      `git config user.name '#{silver_user.username}'`
+  context 'granting badges' do
+    before do
+      GithubBadges.TMP_DIR = File.join(Dir.tmpdir, SecureRandom.hex)
+      SiteSetting.github_badges_repos = "https://github.com/org/repo1.git|https://github.com/org/repo2.git"
+      repos = SiteSetting.github_badges_repos.split("|")
+
+      @dir = GithubBadges.path_to_repo(repos[0])
+      FileUtils.mkdir_p(@dir)
+      exec("git init .")
+      exec("git config user.email '#{bronze_user.email}'")
+      exec("git config user.name '#{bronze_user.username}'")
+      exec("echo $RANDOM > file && git add file")
+      exec("git commit -am 'Commit\n\nCo-authored-by: #{co_author.username} <#{co_author.email}>'")
+      exec("git config user.email '#{silver_user.email}'")
+      exec("git config user.name '#{silver_user.username}'")
       25.times do |n|
         n += 2
-        `echo $RANDOM > file#{n} && git add file#{n}`
-        `git commit -am "Commit #{n}"`
+        exec("echo $RANDOM > file#{n} && git add file#{n}")
+        exec("git commit -am 'Commit #{n}'")
       end
-      `git config user.email '#{contributer.email}'`
-      `git config user.name '#{contributer.username}'`
-      `git checkout -q -b pr`
-      `echo $RANDOM > pr && git add pr`
-      `git commit -am "PR"`
-      `git config user.email '#{bronze_user.email}'`
-      `git config user.name '#{bronze_user.username}'`
-      `git checkout -q master`
-      `git merge pr --no-ff -m "Merge pull request"`
+      exec("git config user.email '#{contributer.email}'")
+      exec("git config user.name '#{contributer.username}'")
+      exec("git checkout -q -b pr")
+      exec("echo $RANDOM > pr && git add pr")
+      exec("git commit -am 'PR'")
+      exec("git config user.email '#{bronze_user.email}'")
+      exec("git config user.name '#{bronze_user.username}'")
+      exec("git checkout -q master")
+      exec("git merge pr --no-ff -m 'Merge pull request'")
+
+      @dir = GithubBadges.path_to_repo(repos[1])
+      FileUtils.mkdir_p(@dir)
+      exec("git init .")
+      exec("git config user.email '#{bronze_user_repo_2.email}'")
+      exec("git config user.name '#{bronze_user_repo_2.username}'")
+      exec("echo $RANDOM > file && git add file")
+      exec("git commit -am 'Commit\n\nCo-authored-by: #{co_author.username} <#{co_author.email}>'")
     end
 
-    dir = GithubBadges.path_to_repo(repos[1])
-    FileUtils.mkdir_p(dir)
-    Dir.chdir(dir) do
-      `git init .`
-      `git config user.email '#{bronze_user_repo_2.email}'`
-      `git config user.name '#{bronze_user_repo_2.username}'`
-      `echo $RANDOM > file && git add file`
-      `git commit -am "Commit"`
-    end
-  end
-
-  after do
-    FileUtils.rm_rf(GithubBadges.TMP_DIR)
-    GithubBadges.TMP_DIR = original_dir
-  end
-
-  it 'grants badges correctly' do
-    # inital run to seed badges and then enable them
-    GithubBadges.badge_grant!
-    users = [bronze_user, bronze_user_repo_2, silver_user, co_author, contributer]
-    users.each { |u| u.badges.destroy_all }
-
-    [
-      GithubBadges::COMMITER_BADGE_NAME_BRONZE,
-      GithubBadges::COMMITER_BADGE_NAME_SILVER
-    ].each do |name|
-      Badge.find_by(name: name).update!(enabled: true)
+    after do
+      FileUtils.rm_rf(GithubBadges.TMP_DIR)
+      GithubBadges.TMP_DIR = original_dir
     end
 
-    GithubBadges.badge_grant!
-    users.each(&:reload)
+    it 'works correctly' do
+      # inital run to seed badges and then enable them
+      GithubBadges.badge_grant!
+      users = [bronze_user, bronze_user_repo_2, silver_user, co_author, contributer]
+      users.each { |u| u.badges.destroy_all }
 
-    [bronze_user, bronze_user_repo_2, co_author].each_with_index do |u, ind|
-      expect(u.badges.pluck(:name)).to eq([GithubBadges::COMMITER_BADGE_NAME_BRONZE])
+      [
+        GithubBadges::COMMITER_BADGE_NAME_BRONZE,
+        GithubBadges::COMMITER_BADGE_NAME_SILVER
+      ].each do |name|
+        Badge.find_by(name: name).update!(enabled: true)
+      end
+
+      GithubBadges.badge_grant!
+      users.each(&:reload)
+
+      [bronze_user, bronze_user_repo_2, co_author].each_with_index do |u, ind|
+        expect(u.badges.pluck(:name)).to eq([GithubBadges::COMMITER_BADGE_NAME_BRONZE])
+      end
+      expect(contributer.badges.pluck(:name)).to contain_exactly(GithubBadges::BADGE_NAME_BRONZE, GithubBadges::COMMITER_BADGE_NAME_BRONZE)
+      expect(silver_user.badges.pluck(:name)).to contain_exactly(GithubBadges::COMMITER_BADGE_NAME_BRONZE, GithubBadges::COMMITER_BADGE_NAME_SILVER)
     end
-    expect(contributer.badges.pluck(:name)).to contain_exactly(GithubBadges::BADGE_NAME_BRONZE, GithubBadges::COMMITER_BADGE_NAME_BRONZE)
-    expect(silver_user.badges.pluck(:name)).to contain_exactly(GithubBadges::COMMITER_BADGE_NAME_BRONZE, GithubBadges::COMMITER_BADGE_NAME_SILVER)
   end
 
   context 'path_to_repo' do
