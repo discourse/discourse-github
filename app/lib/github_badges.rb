@@ -46,7 +46,7 @@ module ::GithubBadges
   COMMITER_BADGE_NAME_GOLD   ||= 'Amazing committer'.freeze
 
   def self.badge_grant!
-    return if SiteSetting.github_badges_repo.blank?
+    return if SiteSetting.github_badges_repos.blank?
 
     # ensure badges exist
     unless bronze = Badge.find_by(name: BADGE_NAME_BRONZE)
@@ -68,17 +68,24 @@ module ::GithubBadges
     end
 
     emails = []
-    if !Rails.env.test?
-      if Dir.exists?(self.TMP_DIR)
-        Rails.logger.info `cd #{self.TMP_DIR} && git pull`
-      else
-        Rails.logger.info `git clone #{SiteSetting.github_badges_repo} #{self.TMP_DIR}`
+    SiteSetting.github_badges_repos.split("|").each do |repo|
+      dir = path_to_repo(repo)
+      if !Rails.env.test?
+        if Dir.exists?(dir)
+          Rails.logger.info `cd #{dir} && git pull`
+        else
+          if valid_repo?(repo)
+            Rails.logger.info `git clone #{repo} #{dir}`
+          else
+            Rails.logger.warn("Invalid repo URL for the github badges plugin: #{repo}")
+          end
+        end
       end
-    end
 
-    Dir.chdir(self.TMP_DIR) do
-      `git log --merges --pretty=format:%p --grep='Merge pull request'`.each_line do |m|
-        emails << (`git log -1 --format=%ce #{m.split(' ')[1].strip}`.strip)
+      Dir.chdir(dir) do
+        `git log --merges --pretty=format:%p --grep='Merge pull request'`.each_line do |m|
+          emails << (`git log -1 --format=%ce #{m.split(' ')[1].strip}`.strip)
+        end
       end
     end
 
@@ -114,9 +121,12 @@ module ::GithubBadges
     end
 
     emails = []
-    Dir.chdir(self.TMP_DIR) do
-      emails.concat(`git log --no-merges --format=%ae`.split("\n"))
-      emails.concat(`git log --no-merges --format=%b | grep -Poi 'co-authored-by:.*<\\K(.*)(?=>)'`.split("\n"))
+    SiteSetting.github_badges_repos.split("|").each do |repo|
+      dir = path_to_repo(repo)
+      Dir.chdir(dir) do
+        emails.concat(`git log --no-merges --format=%ae`.split("\n"))
+        emails.concat(`git log --no-merges --format=%b | grep -Poi 'co-authored-by:.*<\\K(.*)(?=>)'`.split("\n"))
+      end
     end
 
     granter = GithubBadges::Granter.new(emails)
@@ -124,5 +134,16 @@ module ::GithubBadges
     granter.add_badge(silver, as_title: true) { |commits| commits >= 25 }
     granter.add_badge(gold, as_title: true) { |commits| commits >= 1000 }
     granter.grant!
+  end
+
+  def self.path_to_repo(repo)
+    File.join(self.TMP_DIR, repo.gsub(/[^A-Za-z0-9-_]/, "_"))
+  end
+
+  def self.valid_repo?(repo)
+    uri = URI.parse(repo)
+    URI::HTTP === uri || URI::HTTPS === uri
+  rescue URI::Error
+    false
   end
 end

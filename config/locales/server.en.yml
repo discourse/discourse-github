@@ -5,7 +5,7 @@ en:
     github_linkback_access_token: "A valid access token for the user who will post the linkback"
     github_permalinks_enabled: "Enable Github permalink overwrites"
     github_badges_enabled: "Enable github badges"
-    github_badges_repo: 'URL of the GitHub repo to scan for contributions'
+    github_badges_repos: 'URLs of the GitHub repos to scan for contributions and commits'
     github_silver_badge_min_commits: "Minumum number of commits for silver badge"
     github_gold_badge_min_commits: "Minumum number of commits for gold badge"
   github_linkback:

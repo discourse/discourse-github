@@ -8,8 +8,9 @@ plugins:
     default: ''
   github_badges_enabled:
     default: false
-  github_badges_repo:
+  github_badges_repos:
     default: ''
+    type: list
   github_permalinks_enabled:
     default: false
   github_silver_badge_min_commits:
