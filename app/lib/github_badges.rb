@@ -133,7 +133,7 @@ module ::GithubBadges
   end
 
   def self.path_to_repo(repo)
-    File.join(self.TMP_DIR, repo.gsub(/[^A-Za-z0-9-_]/, "_"))
+    File.join(self.TMP_DIR, repo.gsub(/[^A-Za-z0-9\-_]/, "_"))
   end
 
   def self.valid_repo?(repo)
