@@ -6,13 +6,21 @@
 # authors: Robin Ward, Sam Saffron
 # url: https://github.com/discourse/discourse-github
 
+gem 'sawyer', '0.8.2'
+gem 'octokit', '4.14.0'
+
 after_initialize do
-  require_dependency File.expand_path('../app/lib/github_linkback.rb', __FILE__)
-  require_dependency File.expand_path('../app/lib/github_badges.rb', __FILE__)
-  require_dependency File.expand_path('../app/lib/github_permalinks.rb', __FILE__)
-  require_dependency File.expand_path('../app/jobs/regular/create_github_linkback.rb', __FILE__)
-  require_dependency File.expand_path('../app/jobs/scheduled/grant_github_badges.rb', __FILE__)
-  require_dependency File.expand_path('../app/jobs/regular/replace_github_non_permalinks.rb', __FILE__)
+  [
+    '../app/models/github_commit.rb',
+    '../app/models/github_repo.rb',
+    '../app/lib/github_linkback.rb',
+    '../app/lib/github_badges.rb',
+    '../app/lib/github_permalinks.rb',
+    '../app/lib/commits_populator.rb',
+    '../app/jobs/regular/create_github_linkback.rb',
+    '../app/jobs/scheduled/grant_github_badges.rb',
+    '../app/jobs/regular/replace_github_non_permalinks.rb'
+  ].each { |path| require File.expand_path(path, __FILE__) }
 
   DiscourseEvent.on(:post_created) do |post|
     if SiteSetting.github_linkback_enabled?

@@ -19,3 +19,6 @@ plugins:
   github_gold_badge_min_commits:
     default: 250
     min: 1
+  discourse_github_api_token:
+    default: ''
+    secret: true

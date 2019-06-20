@@ -8,6 +8,8 @@ en:
     github_badges_repos: 'URLs of the GitHub repos to scan for contributions and commits'
     github_silver_badge_min_commits: "Minumum number of commits for silver badge"
     github_gold_badge_min_commits: "Minumum number of commits for gold badge"
+    discourse_github_api_token: "A token that will be used for the GitHub API. This token must be provided in order for the commiter/contributor badges to granted to users. You can generate one at https://github.com/settings/tokens/new. The token doesn't need any permissions unless the target repos are private."
+
   github_linkback:
     commit_template: |
       This commit has been mentioned on **%{title}**. There might be relevant details there:
