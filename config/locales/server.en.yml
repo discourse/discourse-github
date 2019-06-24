@@ -1,5 +1,6 @@
 en:
   site_settings:
+    enable_discourse_github_plugin: "Enable the discourse-github plugin"
     github_linkback_enabled: "Link github issues back to forum discussions"
     github_linkback_projects: "List of projects to link back from"
     github_linkback_access_token: "A valid access token for the user who will post the linkback"

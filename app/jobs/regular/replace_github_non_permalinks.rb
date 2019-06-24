@@ -10,6 +10,7 @@ module Jobs
     sidekiq_options queue: 'low'
 
     def execute(args)
+      return unless SiteSetting.enable_discourse_github_plugin?
       return unless SiteSetting.github_permalinks_enabled?
 
       post_id = args[:post_id]

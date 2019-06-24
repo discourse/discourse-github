@@ -1,4 +1,5 @@
 plugins:
+  enable_discourse_github_plugin: true
   github_linkback_enabled:
     default: false
   github_linkback_projects:
