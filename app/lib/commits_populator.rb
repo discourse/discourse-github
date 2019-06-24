@@ -12,7 +12,7 @@ module DiscourseGithubPlugin
 
     def initialize(repo)
       @repo = repo
-      @client = Octokit::Client.new(access_token: SiteSetting.discourse_github_api_token, per_page: 100)
+      @client = Octokit::Client.new(access_token: SiteSetting.github_linkback_access_token, per_page: 100)
     end
 
     def populate!

@@ -7,6 +7,7 @@ plugins:
     type: list
   github_linkback_access_token:
     default: ''
+    secret: true
   github_badges_enabled:
     default: false
   github_badges_repos:
@@ -20,6 +21,3 @@ plugins:
   github_gold_badge_min_commits:
     default: 250
     min: 1
-  discourse_github_api_token:
-    default: ''
-    secret: true
