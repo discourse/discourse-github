@@ -6,7 +6,7 @@
 # authors: Robin Ward, Sam Saffron
 # url: https://github.com/discourse/discourse-github
 
-gem 'sawyer', '0.8.2'
+gem 'sawyer', '0.8.1'
 gem 'octokit', '4.14.0'
 
 enabled_site_setting :enable_discourse_github_plugin
