@@ -1,13 +1,15 @@
 en:
   site_settings:
+    enable_discourse_github_plugin: "Enable the discourse-github plugin"
     github_linkback_enabled: "Link github issues back to forum discussions"
     github_linkback_projects: "List of projects to link back from"
-    github_linkback_access_token: "A valid access token for the user who will post the linkback"
+    github_linkback_access_token: "A valid access token for the user who will post the linkback and for counting commits/contributions to grant badges. See <a href=\"https://meta.discourse.org/t/99895\">here</a> for instructions on how to get a token."
     github_permalinks_enabled: "Enable Github permalink overwrites"
     github_badges_enabled: "Enable github badges"
     github_badges_repos: 'URLs of the GitHub repos to scan for contributions and commits'
     github_silver_badge_min_commits: "Minumum number of commits for silver badge"
     github_gold_badge_min_commits: "Minumum number of commits for gold badge"
+
   github_linkback:
     commit_template: |
       This commit has been mentioned on **%{title}**. There might be relevant details there:

@@ -1,12 +1,18 @@
 # frozen_string_literal: true
 
-module ::GithubBadges
+module DiscourseGithubPlugin
   class UpdateJob < ::Jobs::Scheduled
-    every 1.day
+    every 4.hours
 
     def execute(args)
+      return unless SiteSetting.enable_discourse_github_plugin?
       return unless SiteSetting.github_badges_enabled?
-      GithubBadges.badge_grant!
+      return unless SiteSetting.github_linkback_access_token.present?
+
+      GithubRepo.repos.each do |repo|
+        CommitsPopulator.new(repo).populate!
+      end
+      GithubBadges.grant!
     end
   end
 end
