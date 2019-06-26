@@ -23,7 +23,7 @@ module DiscourseGithubPlugin
       def grant!
         email_commits = @emails.group_by { |e| e }.map { |k, l| [k, l.count] }.to_h
         User.with_email(email_commits.keys).each do |user|
-          commits_count = email_commits[user.email]
+          commits_count = user.emails.sum { |email| email_commits[email] || 0 }
           @badges.each do |badge, as_title, threshold|
             if commits_count >= threshold && badge.enabled? && SiteSetting.enable_badges
               BadgeGranter.grant(badge, user)
