@@ -7,7 +7,7 @@
 # url: https://github.com/discourse/discourse-github
 
 gem 'sawyer', '0.8.1'
-gem 'octokit', '4.14.0'
+gem 'octokit', '4.9.0'
 
 enabled_site_setting :enable_discourse_github_plugin
 enabled_site_setting_filter :github
