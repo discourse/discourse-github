@@ -6,6 +6,8 @@
 # authors: Robin Ward, Sam Saffron
 # url: https://github.com/discourse/discourse-github
 
+gem 'public_suffix', '3.0.3'
+gem 'addressable', '2.5.2'
 gem 'sawyer', '0.8.1'
 gem 'octokit', '4.9.0'
 
