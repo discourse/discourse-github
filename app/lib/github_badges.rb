@@ -2,13 +2,13 @@
 
 module DiscourseGithubPlugin
   module GithubBadges
-    BADGE_NAME_BRONZE ||= 'Contributor'.freeze
-    BADGE_NAME_SILVER ||= 'Great contributor'.freeze
-    BADGE_NAME_GOLD   ||= 'Amazing contributor'.freeze
+    BADGE_NAME_BRONZE ||= 'Contributor'
+    BADGE_NAME_SILVER ||= 'Great contributor'
+    BADGE_NAME_GOLD   ||= 'Amazing contributor'
 
-    COMMITER_BADGE_NAME_BRONZE ||= 'Committer'.freeze
-    COMMITER_BADGE_NAME_SILVER ||= 'Frequent committer'.freeze
-    COMMITER_BADGE_NAME_GOLD   ||= 'Amazing committer'.freeze
+    COMMITER_BADGE_NAME_BRONZE ||= 'Committer'
+    COMMITER_BADGE_NAME_SILVER ||= 'Frequent committer'
+    COMMITER_BADGE_NAME_GOLD   ||= 'Amazing committer'
 
     class Granter
       def initialize(emails)
