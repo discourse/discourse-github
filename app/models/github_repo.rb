@@ -7,7 +7,8 @@ module DiscourseGithubPlugin
     def self.repos
       repos = []
       SiteSetting.github_badges_repos.split("|").each do |link|
-        name = link.match(/https?:\/\/github.com\/(.+)/).captures.first
+        next unless link =~ /https?:\/\/github.com\/(.+)/
+        name = Regexp.last_match[1]
         name.gsub!(/\.git$/, "")
         name.gsub!(/\/$/, "") # Remove trailing '/'
         repos << find_or_create_by!(name: name)

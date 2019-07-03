@@ -15,5 +15,9 @@ describe DiscourseGithubPlugin::GithubRepo do
     repo = DiscourseGithubPlugin::GithubRepo.repos.first
     expect(repo.name).to eq ("discourse/discourse")
   end
-end
 
+  it "doesn't raise an error when the site setting doesn't contain a github URL" do
+    SiteSetting.github_badges_repos = "https://eviltrout.com/discourse/discourse/"
+    expect(DiscourseGithubPlugin::GithubRepo.repos).to be_blank
+  end
+end
