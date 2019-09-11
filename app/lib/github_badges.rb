@@ -28,7 +28,7 @@ module DiscourseGithubPlugin
             if commits_count >= threshold && badge.enabled? && SiteSetting.enable_badges
               BadgeGranter.grant(badge, user)
               if user.title.blank? && as_title
-                user.update_attributes!(title: badge.name)
+                user.update!(title: badge.name)
               end
             end
           end
