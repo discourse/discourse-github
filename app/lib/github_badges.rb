@@ -22,8 +22,36 @@ module DiscourseGithubPlugin
 
       def grant!
         email_commits = @emails.group_by { |e| e }.map { |k, l| [k, l.count] }.to_h
-        User.with_email(email_commits.keys).each do |user|
-          commits_count = user.emails.sum { |email| email_commits[email] || 0 }
+
+        regular_emails = []
+        github_id_email = {}
+        @emails.each do |email|
+          match = email.match(/\A(?<id>\d+)\+.+@users.noreply.github.com\Z/)
+
+          if match
+            github_id = match[:id].to_i
+            github_id_email[github_id] = email
+          else
+            regular_emails << email
+          end
+        end
+
+        user_emails = {}
+        User.with_email(regular_emails).each do |user|
+          user_emails[user] = user.emails
+        end
+
+        if github_id_email.any?
+          infos = GithubUserInfo.where(github_user_id: github_id_email.keys).includes(:user)
+
+          infos.each do |info|
+            user_emails[info.user] ||= []
+            user_emails[info.user] << github_id_email[info.github_user_id]
+          end
+        end
+
+        user_emails.each do |user, emails|
+          commits_count = emails.sum { |email| email_commits[email] || 0 }
           @badges.each do |badge, as_title, threshold|
             if commits_count >= threshold && badge.enabled? && SiteSetting.enable_badges
               BadgeGranter.grant(badge, user)
