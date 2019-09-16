@@ -7,6 +7,7 @@ describe DiscourseGithubPlugin::GithubBadges do
   let(:bronze_user_repo_2) { Fabricate(:user) }
   let(:silver_user) { Fabricate(:user) }
   let(:contributor) { Fabricate(:user) }
+  let(:private_email_contributor) { Fabricate(:user) }
   let(:merge_commit_user) { Fabricate(:user) }
 
   context 'committer and contributor badges' do
@@ -48,6 +49,19 @@ describe DiscourseGithubPlugin::GithubBadges do
         committed_at: 2.day.ago,
         role_id: roles[:committer]
       )
+
+      gh_info = GithubUserInfo.create!(
+        user_id: private_email_contributor.id,
+        screen_name: "bob",
+        github_user_id: 100,
+      )
+
+      repo1.commits.create!(
+        sha: "123",
+        email: "100+bob@users.noreply.github.com",
+        committed_at: 1.day.ago,
+        role_id: roles[:contributor]
+      )
     end
 
     it 'granted correctly' do
@@ -73,6 +87,7 @@ describe DiscourseGithubPlugin::GithubBadges do
         expect(u.badges.pluck(:name)).to eq([committer_bronze])
       end
       expect(contributor.badges.pluck(:name)).to eq([contributor_bronze])
+      expect(private_email_contributor.badges.pluck(:name)).to eq([contributor_bronze])
       expect(silver_user.badges.pluck(:name)).to contain_exactly(committer_bronze, committer_silver)
     end
   end
