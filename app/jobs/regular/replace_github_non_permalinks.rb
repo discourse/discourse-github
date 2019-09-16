@@ -6,7 +6,7 @@ require 'uri'
 
 module Jobs
 
-  class ReplaceGithubNonPermalinks < Jobs::Base
+  class ReplaceGithubNonPermalinks < ::Jobs::Base
     sidekiq_options queue: 'low'
 
     def execute(args)
