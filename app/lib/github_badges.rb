@@ -24,13 +24,13 @@ module DiscourseGithubPlugin
         email_commits = @emails.group_by { |e| e }.map { |k, l| [k, l.count] }.to_h
 
         regular_emails = []
-        github_id_email = {}
+        github_name_email = {}
         @emails.each do |email|
-          match = email.match(/\A(?<id>\d+)\+.+@users.noreply.github.com\Z/)
+          match = email.match(/\A(\d+\+)?(?<name>.+)@users.noreply.github.com\Z/)
 
           if match
-            github_id = match[:id].to_i
-            github_id_email[github_id] = email
+            name = match[:name]
+            github_name_email[name] = email
           else
             regular_emails << email
           end
@@ -41,12 +41,12 @@ module DiscourseGithubPlugin
           user_emails[user] = user.emails
         end
 
-        if github_id_email.any?
-          infos = GithubUserInfo.where(github_user_id: github_id_email.keys).includes(:user)
+        if github_name_email.any?
+          infos = GithubUserInfo.where(screen_name: github_name_email.keys).includes(:user)
 
           infos.each do |info|
             user_emails[info.user] ||= []
-            user_emails[info.user] << github_id_email[info.github_user_id]
+            user_emails[info.user] << github_name_email[info.screen_name]
           end
         end
 
