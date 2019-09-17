@@ -8,6 +8,7 @@ describe DiscourseGithubPlugin::GithubBadges do
   let(:silver_user) { Fabricate(:user) }
   let(:contributor) { Fabricate(:user) }
   let(:private_email_contributor) { Fabricate(:user) }
+  let(:private_email_contributor2) { Fabricate(:user) }
   let(:merge_commit_user) { Fabricate(:user) }
 
   context 'committer and contributor badges' do
@@ -50,15 +51,26 @@ describe DiscourseGithubPlugin::GithubBadges do
         role_id: roles[:committer]
       )
 
-      gh_info = GithubUserInfo.create!(
+      GithubUserInfo.create!(
         user_id: private_email_contributor.id,
         screen_name: "bob",
         github_user_id: 100,
       )
-
       repo1.commits.create!(
         sha: "123",
         email: "100+bob@users.noreply.github.com",
+        committed_at: 1.day.ago,
+        role_id: roles[:contributor]
+      )
+
+      GithubUserInfo.create!(
+        user_id: private_email_contributor2.id,
+        screen_name: "joe",
+        github_user_id: 101,
+      )
+      repo1.commits.create!(
+        sha: "124",
+        email: "joe@users.noreply.github.com",
         committed_at: 1.day.ago,
         role_id: roles[:contributor]
       )
@@ -72,7 +84,15 @@ describe DiscourseGithubPlugin::GithubBadges do
       committer_bronze = DiscourseGithubPlugin::GithubBadges::COMMITER_BADGE_NAME_BRONZE
       committer_silver = DiscourseGithubPlugin::GithubBadges::COMMITER_BADGE_NAME_SILVER
 
-      users = [bronze_user, bronze_user_repo_2, silver_user, contributor, merge_commit_user]
+      users = [
+        bronze_user,
+        bronze_user_repo_2,
+        silver_user,
+        contributor,
+        private_email_contributor,
+        private_email_contributor2,
+        merge_commit_user,
+      ]
       users.each { |u| u.badges.destroy_all }
 
       [committer_bronze, committer_silver].each do |name|
@@ -88,6 +108,7 @@ describe DiscourseGithubPlugin::GithubBadges do
       end
       expect(contributor.badges.pluck(:name)).to eq([contributor_bronze])
       expect(private_email_contributor.badges.pluck(:name)).to eq([contributor_bronze])
+      expect(private_email_contributor2.badges.pluck(:name)).to eq([contributor_bronze])
       expect(silver_user.badges.pluck(:name)).to contain_exactly(committer_bronze, committer_silver)
     end
   end
