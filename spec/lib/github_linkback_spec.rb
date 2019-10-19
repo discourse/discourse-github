@@ -6,6 +6,7 @@ describe GithubLinkback do
   let(:github_commit_link) { "https://github.com/discourse/discourse/commit/76981605fa10975e2e7af457e2f6a31909e0c811" }
   let(:github_commit_link_with_anchor) { "#{github_commit_link}#anchor" }
   let(:github_pr_link) { "https://github.com/discourse/discourse/pull/701" }
+  let(:github_pr_files_link) { "https://github.com/discourse/discourse/pull/701/files" }
   let(:github_pr_link_wildcard) { "https://github.com/discourse/discourse-github-linkback/pull/3" }
 
   let(:post) do
@@ -25,6 +26,8 @@ describe GithubLinkback do
         https://github.com/eviltrout/tis-100/commit/e22b23f354e3a1c31bc7ad37a6a309fd6daf18f4
 
         #{github_pr_link}
+
+        #{github_pr_files_link}
 
         i have no idea what i'm linking back to
 
