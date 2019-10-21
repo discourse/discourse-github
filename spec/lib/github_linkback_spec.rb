@@ -6,6 +6,7 @@ describe GithubLinkback do
   let(:github_commit_link) { "https://github.com/discourse/discourse/commit/76981605fa10975e2e7af457e2f6a31909e0c811" }
   let(:github_commit_link_with_anchor) { "#{github_commit_link}#anchor" }
   let(:github_pr_link) { "https://github.com/discourse/discourse/pull/701" }
+  let(:github_pr_files_link) { "https://github.com/discourse/discourse/pull/701/files" }
   let(:github_pr_link_wildcard) { "https://github.com/discourse/discourse-github-linkback/pull/3" }
 
   let(:post) do
@@ -26,6 +27,8 @@ describe GithubLinkback do
 
         #{github_pr_link}
 
+        #{github_pr_files_link}
+
         i have no idea what i'm linking back to
 
         #{github_pr_link_wildcard}
@@ -37,7 +40,7 @@ describe GithubLinkback do
   end
 
   context "#should_enqueue?" do
-    let(:post_without_link) { Fabricate.build(:post) }
+    let(:post_without_link) { Fabricate.build(:post, raw: "Hello github!") }
 
     let(:post_with_link) do
       Fabricate.build(:post, raw: 'https://github.com/discourse/discourse/commit/5be9bee2307dd517c26e6ef269471aceba5d5acf')
@@ -53,7 +56,7 @@ describe GithubLinkback do
       expect(GithubLinkback.new(nil).should_enqueue?).to eq(false)
     end
 
-    it "returns false when the post doesn't have the word github in it" do
+    it "returns false when the post doesn't have the `github.com` in it" do
       SiteSetting.github_linkback_enabled = true
       expect(GithubLinkback.new(post_without_link).should_enqueue?).to eq(false)
     end

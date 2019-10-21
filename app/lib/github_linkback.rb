@@ -24,7 +24,7 @@ class GithubLinkback
     !!(SiteSetting.github_linkback_enabled? &&
       SiteSetting.enable_discourse_github_plugin? &&
       @post.present? &&
-      @post.raw =~ /github/ &&
+      @post.raw =~ /github\.com/ &&
       Guardian.new.can_see?(@post) &&
       @post.topic.visible?)
   end
@@ -40,23 +40,28 @@ class GithubLinkback
 
     result = {}
     PrettyText.extract_links(@post.cooked).map(&:url).each do |l|
-      l = l.split('#')[0]
-      next if @post.custom_fields[GithubLinkback.field_for(l)].present?
-
       if l =~ /https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/commit\/([0-9a-f]+)/
-        project = "#{Regexp.last_match[1]}/#{Regexp.last_match[2]}"
-        if is_allowed_project_link?(projects, project)
-          link = Link.new(Regexp.last_match[0], project, :commit)
-          link.sha = Regexp.last_match[3]
-          result[link.url] = link
-        end
+        url, org, repo, sha = Regexp.last_match.to_a
+        project = "#{org}/#{repo}"
+
+        next if result[url]
+        next if @post.custom_fields[GithubLinkback.field_for(url)].present?
+        next unless is_allowed_project_link?(projects, project)
+
+        link = Link.new(url, project, :commit)
+        link.sha = sha
+        result[url] = link
       elsif l =~ /https?:\/\/github.com\/([^\/]+)\/([^\/]+)\/pull\/(\d+)/
-        project = "#{Regexp.last_match[1]}/#{Regexp.last_match[2]}"
-        if is_allowed_project_link?(projects, project)
-          link = Link.new(Regexp.last_match[0], project, :pr)
-          link.pr_number = Regexp.last_match[3].to_i
-          result[link.url] = link
-        end
+        url, org, repo, pr_number = Regexp.last_match.to_a
+        project = "#{org}/#{repo}"
+
+        next if result[url]
+        next if @post.custom_fields[GithubLinkback.field_for(url)].present?
+        next unless is_allowed_project_link?(projects, project)
+
+        link = Link.new(url, project, :pr)
+        link.pr_number = pr_number.to_i
+        result[url] = link
       end
     end
     result.values
