@@ -19,18 +19,18 @@ module DiscourseGithubPlugin
       if @repo.commits.size == 0
         build_history!
       else
-        front_sha = $redis.get(front_commit_redis_key)
+        front_sha = Discourse.redis.get(front_commit_redis_key)
         front_sha = @repo.commits.order("committed_at DESC").first.sha if !front_sha
         if removed?(front_sha)
           # there has been a force push, next run will rebuild history
           @repo.commits.delete_all
-          $redis.del(back_commit_redis_key)
-          $redis.del(front_commit_redis_key)
+          Discourse.redis.del(back_commit_redis_key)
+          Discourse.redis.del(front_commit_redis_key)
           return
         end
         fetch_new_commits!(front_sha)
 
-        back_sha = $redis.get(back_commit_redis_key)
+        back_sha = Discourse.redis.get(back_commit_redis_key)
         return if back_sha == HISTORY_COMPLETE
         back_sha = @repo.commits.order("committed_at ASC").first.sha if !back_sha
         commit = @client.commit(@repo.name, back_sha)
@@ -124,11 +124,11 @@ module DiscourseGithubPlugin
     end
 
     def set_front_commit(sha)
-      $redis.set(front_commit_redis_key, sha)
+      Discourse.redis.set(front_commit_redis_key, sha)
     end
 
     def set_back_commit(sha)
-      $redis.set(back_commit_redis_key, sha)
+      Discourse.redis.set(back_commit_redis_key, sha)
     end
 
     def front_commit_redis_key
