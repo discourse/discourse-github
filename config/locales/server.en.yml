@@ -20,3 +20,7 @@ en:
       This pull request has been mentioned on **%{title}**. There might be relevant details there:
 
       %{post_url}
+    issue_template: |
+      This issue has been mentioned on **%{title}**. There might be relevant details there:
+
+      %{post_url}
