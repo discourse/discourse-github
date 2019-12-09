@@ -2,14 +2,14 @@
 
 # name: discourse-github
 # about: Github Linkback, Github Badges, Github Permalinks
-# version: 0.1
+# version: 0.2
 # authors: Robin Ward, Sam Saffron
 # url: https://github.com/discourse/discourse-github
 
-gem 'public_suffix', '3.0.3'
-gem 'addressable', '2.5.2'
-gem 'sawyer', '0.8.1'
-gem 'octokit', '4.9.0'
+gem 'public_suffix', '4.0.1'
+gem 'addressable', '2.7.0'
+gem 'sawyer', '0.8.2'
+gem 'octokit', '4.14.0'
 
 enabled_site_setting :enable_discourse_github_plugin
 enabled_site_setting_filter :github
