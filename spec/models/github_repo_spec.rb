@@ -16,19 +16,10 @@ describe DiscourseGithubPlugin::GithubRepo do
     expect(repo.name).to eq ("discourse/discourse")
   end
 
-  it "doesn't raise an error when the site setting doesn't contain a github URL" do
-    SiteSetting.github_badges_repos = "https://eviltrout.com/discourse/discourse/"
-    expect(DiscourseGithubPlugin::GithubRepo.repos).to be_blank
-  end
-
   it "doesn't raise an error when the site setting follows the user/repo format" do
     SiteSetting.github_badges_repos = "discourse/discourse-github"
     repo = DiscourseGithubPlugin::GithubRepo.repos.first
     expect(repo.name).to eq ("discourse/discourse-github")
-
-    SiteSetting.github_badges_repos = "discourse/discourse_github"
-    repo = DiscourseGithubPlugin::GithubRepo.repos.first
-    expect(repo.name).to eq ("discourse/discourse_github")
 
     SiteSetting.github_badges_repos = "discourse/somerepo_with-numbers7"
     repo = DiscourseGithubPlugin::GithubRepo.repos.first

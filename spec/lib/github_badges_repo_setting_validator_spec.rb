@@ -15,7 +15,7 @@ describe GithubBadgesRepoSettingValidator do
     end
 
     context "when a github repo in the format user/repo is provided" do
-      let(:value) { "discourse/discourse_github" }
+      let(:value) { "discourse/discourse-github" }
 
       it "is ok" do
         expect(subject.valid_value?(value)).to eq(true)
@@ -31,7 +31,7 @@ describe GithubBadgesRepoSettingValidator do
     end
 
     context "when multiple valid settings are provided" do
-      let(:value) { "discourse/discourse_github|https://github.com/discourse/discourse/" }
+      let(:value) { "discourse/discourse-github|https://github.com/discourse/discourse/" }
 
       it "is ok" do
         expect(subject.valid_value?(value)).to eq(true)
@@ -39,7 +39,7 @@ describe GithubBadgesRepoSettingValidator do
     end
 
     context "when multiple valid settings with one invalid setting is provided" do
-      let(:value) { "discourse/discourse_github|https://github.com/discourse/discourse/|bad-dog" }
+      let(:value) { "discourse/discourse-github|https://github.com/discourse/discourse/|bad-dog" }
 
       it "is not ok" do
         expect(subject.valid_value?(value)).to eq(false)
