@@ -2,7 +2,7 @@
 
 # name: discourse-github
 # about: Github Linkback, Github Badges, Github Permalinks
-# version: 0.2
+# version: 0.3
 # authors: Robin Ward, Sam Saffron
 # url: https://github.com/discourse/discourse-github
 
