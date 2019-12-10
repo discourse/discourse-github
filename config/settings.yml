@@ -13,6 +13,7 @@ plugins:
   github_badges_repos:
     default: ''
     type: list
+    validator: "GithubBadgesRepoSettingValidator"
   github_permalinks_enabled:
     default: false
   github_permalinks_exclude:

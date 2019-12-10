@@ -11,6 +11,9 @@ en:
     github_silver_badge_min_commits: "Minumum number of commits for silver badge"
     github_gold_badge_min_commits: "Minumum number of commits for gold badge"
 
+    errors:
+      invalid_badge_repo: "You must provide a GitHub URL or the repository name in the format github_user/repository_name"
+
   github_linkback:
     commit_template: |
       This commit has been mentioned on **%{title}**. There might be relevant details there:
