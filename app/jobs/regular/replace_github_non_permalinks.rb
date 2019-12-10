@@ -77,7 +77,7 @@ module Jobs
       response = Net::HTTP.get_response(uri)
 
       if response.kind_of? Net::HTTPSuccess
-        return JSON.parse(response.body)
+        JSON.parse(response.body)
       end
     end
 
