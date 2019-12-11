@@ -16,6 +16,8 @@ module DiscourseGithubPlugin
     end
 
     def populate!
+      return if @client.branches(@repo.name).empty?
+
       if @repo.commits.size == 0
         build_history!
       else
