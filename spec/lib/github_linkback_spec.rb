@@ -129,7 +129,7 @@ describe GithubLinkback do
       expect(links[1].url).to eq(github_issue_link)
       expect(links[1].project).to eq("discourse/discourse")
       expect(links[1].issue_number).to eq(123)
-      expect(links[1].type).to eq(:pr)
+      expect(links[1].type).to eq(:issue)
 
       expect(links[2].url).to eq(github_pr_link)
       expect(links[2].project).to eq("discourse/discourse")
