@@ -11,6 +11,7 @@ gem 'octokit', '4.14.0'
 
 # Site setting validators must be loaded before initialize
 require_relative "app/lib/github_badges_repo_setting_validator.rb"
+require_relative "app/lib/github_linkback_access_token_setting_validator.rb"
 
 enabled_site_setting :enable_discourse_github_plugin
 enabled_site_setting_filter :github
