@@ -1,12 +1,12 @@
 en:
   site_settings:
     enable_discourse_github_plugin: "Enable the discourse-github plugin"
-    github_linkback_enabled: "Link github issues back to forum discussions"
+    github_linkback_enabled: "Link GitHub issues back to forum discussions"
     github_linkback_projects: "List of projects to link back from"
     github_linkback_access_token: "A valid access token for the user who will post the linkback and for counting commits/contributions to grant badges. See <a href=\"https://meta.discourse.org/t/99895\">here</a> for instructions on how to get a token."
-    github_permalinks_enabled: "Enable Github permalink overwrites"
+    github_permalinks_enabled: "Enable GitHub permalink overwrites"
     github_permalinks_exclude: "Filename or directory that should be excluded from permalink overwrites. Provide only filename or full path: user/repository/optional-directory/filename"
-    github_badges_enabled: "Enable github badges"
+    github_badges_enabled: "Enable GitHub badges"
     github_badges_repos: 'URLs of the GitHub repos to scan for contributions and commits'
     github_silver_badge_min_commits: "Minumum number of commits for silver badge"
     github_gold_badge_min_commits: "Minumum number of commits for gold badge"
@@ -27,4 +27,4 @@ en:
   github_commits_populator:
     errors:
       invalid_octokit_credentials_pm_title: "Action required for discourse-github plugin"
-      invalid_octokit_credentials_pm: "The GitHub credentials provided to the discourse-github plugin are invalid. The GitHub badges setting has been disabled, and commits will no longer be populated until the issue is resolved.<br/><br/>Check your github linkback access token setting to ensure the token is correct at <a href=\"%{base_path}/admin/site_settings/category/plugins?filter=github\">the discourse-github Site Settings</a>."
+      invalid_octokit_credentials_pm: "The GitHub credentials provided to the discourse-github plugin are invalid. The \"github badges enabled\" site setting has been disabled, and commits will no longer be populated until the issue is resolved.<br/><br/>Check your \"github linkback access token\" site setting to ensure the token is correct and has permission to all repos via <a href=\"%{base_path}/admin/site_settings/category/plugins?filter=GitHub\">discourse-github Site Settings</a>."
