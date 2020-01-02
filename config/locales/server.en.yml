@@ -23,3 +23,7 @@ en:
       This pull request has been mentioned on **%{title}**. There might be relevant details there:
 
       %{post_url}
+  github_commits_populator:
+    errors:
+      invalid_octokit_credentials_pm_title: "Action required for discourse-github plugin"
+      invalid_octokit_credentials_pm: "The GitHub credentials provided to the discourse-github plugin are invalid. The GitHub badges setting has been disabled, and commits will no longer be populated until the issue is resolved.<br/><br/>Check your github linkback access token setting to ensure the token is correct at <a href=\"%{base_path}/admin/site_settings/category/plugins?filter=github\">the discourse-github Site Settings</a>."

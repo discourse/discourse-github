@@ -16,6 +16,7 @@ module DiscourseGithubPlugin
     end
 
     def populate!
+      return unless SiteSetting.github_badges_enabled?
       return if @client.branches(@repo.name).empty?
 
       if @repo.commits.size == 0
@@ -39,6 +40,11 @@ module DiscourseGithubPlugin
         build_history!(start_at: commit.commit.committer.date)
       end
     rescue Octokit::Error => err
+      if err.is_a?(Octokit::Unauthorized)
+        disable_github_badges_and_inform_admin
+        Rails.logger.warn("Disabled github_badges_enabled site setting due to invalid GitHub authentication credentials via github_linkback_access_token.")
+        return
+      end
       Rails.logger.warn("#{err.class}: #{err.message}")
     end
 
@@ -141,6 +147,19 @@ module DiscourseGithubPlugin
     def back_commit_redis_key
       # this key should refer to the OLDEST commit we have in the db
       "discourse-github-back-commit-#{@repo.name}"
+    end
+
+    def disable_github_badges_and_inform_admin
+      SiteSetting.github_badges_enabled = false
+      site_admin_username = User.where(admin: true).human_users.limit(1).pluck(:username).first
+      PostCreator.create!(
+        Discourse.system_user,
+        title: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm_title"),
+        raw: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm", base_path: Discourse.base_path),
+        archetype: Archetype.private_message,
+        target_usernames: site_admin_username,
+        skip_validations: true
+      )
     end
   end
 end
