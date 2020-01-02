@@ -2,14 +2,16 @@
 
 # name: discourse-github
 # about: Github Linkback, Github Badges, Github Permalinks
-# version: 0.1
+# version: 0.3
 # authors: Robin Ward, Sam Saffron
 # url: https://github.com/discourse/discourse-github
 
-gem 'public_suffix', '3.0.3'
-gem 'addressable', '2.5.2'
-gem 'sawyer', '0.8.1'
-gem 'octokit', '4.9.0'
+gem 'sawyer', '0.8.2'
+gem 'octokit', '4.14.0'
+
+# Site setting validators must be loaded before initialize
+require_relative "app/lib/github_badges_repo_setting_validator.rb"
+require_relative "app/lib/github_linkback_access_token_setting_validator.rb"
 
 enabled_site_setting :enable_discourse_github_plugin
 enabled_site_setting_filter :github

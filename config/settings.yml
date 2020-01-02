@@ -8,11 +8,13 @@ plugins:
   github_linkback_access_token:
     default: ''
     secret: true
+    validator: "GithubLinkbackAccessTokenSettingValidator"
   github_badges_enabled:
     default: false
   github_badges_repos:
     default: ''
     type: list
+    validator: "GithubBadgesRepoSettingValidator"
   github_permalinks_enabled:
     default: false
   github_permalinks_exclude:
