@@ -4,7 +4,8 @@ require 'rails_helper'
 
 describe DiscourseGithubPlugin::CommitsPopulator do
   let(:repo) { DiscourseGithubPlugin::GithubRepo.new(name: 'discourse/discourse') }
-  let!(:site_admin) { Fabricate(:admin) }
+  let!(:site_admin1) { Fabricate(:admin) }
+  let!(:site_admin2) { Fabricate(:admin) }
   subject { described_class.new(repo) }
 
   before do
@@ -20,7 +21,8 @@ describe DiscourseGithubPlugin::CommitsPopulator do
       subject.populate!
       expect(SiteSetting.github_badges_enabled).to eq(false)
       sent_pm = Post.joins(:topic).includes(:topic).where('topics.archetype = ?', Archetype.private_message).last
-      expect(sent_pm.topic.allowed_users.include?(site_admin)).to eq(true)
+      expect(sent_pm.topic.allowed_users.include?(site_admin1)).to eq(true)
+      expect(sent_pm.topic.allowed_users.include?(site_admin2)).to eq(true)
       expect(sent_pm.topic.title).to eq(I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm_title"))
       expect(sent_pm.raw).to eq(I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm", base_path: Discourse.base_path))
     end

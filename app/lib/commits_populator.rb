@@ -151,13 +151,13 @@ module DiscourseGithubPlugin
 
     def disable_github_badges_and_inform_admin
       SiteSetting.github_badges_enabled = false
-      site_admin_username = User.where(admin: true).human_users.limit(1).pluck(:username).first
+      site_admin_usernames = User.where(admin: true).human_users.order('last_seen_at DESC').limit(10).pluck(:username)
       PostCreator.create!(
         Discourse.system_user,
         title: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm_title"),
         raw: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm", base_path: Discourse.base_path),
         archetype: Archetype.private_message,
-        target_usernames: site_admin_username,
+        target_usernames: site_admin_usernames,
         skip_validations: true
       )
     end
