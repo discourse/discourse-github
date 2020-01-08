@@ -125,20 +125,11 @@ class GithubLinkback
   def post_pr_or_issue(link, type)
     pr_or_issue_number = link.pr_number || link.issue_number
     github_url = "https://api.github.com/repos/#{link.project}/issues/#{pr_or_issue_number}/comments"
-    case type
-    when :pr
-      comment = I18n.t(
-        'github_linkback.pr_template',
-        title: SiteSetting.title,
-        post_url: "#{Discourse.base_url}#{@post.url}"
-      )
-    when :issue
-      comment = I18n.t(
-        'github_linkback.issue_template',
-        title: SiteSetting.title,
-        post_url: "#{Discourse.base_url}#{@post.url}"
-      )
-    end
+    comment = I18n.t(
+      type == :pr ? 'github_linkback.pr_template' : 'github_linkback.issue_template',
+      title: SiteSetting.title,
+      post_url: "#{Discourse.base_url}#{@post.url}"
+    )
 
     Excon.post(
       github_url,
