@@ -5,6 +5,7 @@ require 'rails_helper'
 describe GithubLinkback do
   let(:github_commit_link) { "https://github.com/discourse/discourse/commit/76981605fa10975e2e7af457e2f6a31909e0c811" }
   let(:github_commit_link_with_anchor) { "#{github_commit_link}#anchor" }
+  let(:github_issue_link) { "https://github.com/discourse/discourse/issues/123" }
   let(:github_pr_link) { "https://github.com/discourse/discourse/pull/701" }
   let(:github_pr_files_link) { "https://github.com/discourse/discourse/pull/701/files" }
   let(:github_pr_link_wildcard) { "https://github.com/discourse/discourse-github-linkback/pull/3" }
@@ -24,6 +25,8 @@ describe GithubLinkback do
         #{github_commit_link_with_anchor}
 
         https://github.com/eviltrout/tis-100/commit/e22b23f354e3a1c31bc7ad37a6a309fd6daf18f4
+
+        #{github_issue_link}
 
         #{github_pr_link}
 
@@ -104,6 +107,7 @@ describe GithubLinkback do
       SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance|discourse/*"
 
       post.custom_fields[GithubLinkback.field_for(github_commit_link)] = "true"
+      post.custom_fields[GithubLinkback.field_for(github_issue_link)] = "true"
       post.custom_fields[GithubLinkback.field_for(github_pr_link)] = "true"
       post.custom_fields[GithubLinkback.field_for(github_pr_link_wildcard)] = "true"
       post.save_custom_fields
@@ -115,22 +119,27 @@ describe GithubLinkback do
     it "should return the urls for the selected projects" do
       SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance|discourse/*"
       links = GithubLinkback.new(post).github_links
-      expect(links.size).to eq(3)
+      expect(links.size).to eq(4)
 
       expect(links[0].url).to eq(github_commit_link)
       expect(links[0].project).to eq("discourse/discourse")
       expect(links[0].sha).to eq("76981605fa10975e2e7af457e2f6a31909e0c811")
       expect(links[0].type).to eq(:commit)
 
-      expect(links[1].url).to eq(github_pr_link)
+      expect(links[1].url).to eq(github_issue_link)
       expect(links[1].project).to eq("discourse/discourse")
-      expect(links[1].pr_number).to eq(701)
-      expect(links[1].type).to eq(:pr)
+      expect(links[1].issue_number).to eq(123)
+      expect(links[1].type).to eq(:issue)
 
-      expect(links[2].url).to eq(github_pr_link_wildcard)
-      expect(links[2].project).to eq("discourse/discourse-github-linkback")
-      expect(links[2].pr_number).to eq(3)
+      expect(links[2].url).to eq(github_pr_link)
+      expect(links[2].project).to eq("discourse/discourse")
+      expect(links[2].pr_number).to eq(701)
       expect(links[2].type).to eq(:pr)
+
+      expect(links[3].url).to eq(github_pr_link_wildcard)
+      expect(links[3].project).to eq("discourse/discourse-github-linkback")
+      expect(links[3].pr_number).to eq(3)
+      expect(links[3].type).to eq(:pr)
     end
   end
 
@@ -158,6 +167,10 @@ describe GithubLinkback do
           with(headers: headers).
           to_return(status: 200, body: "", headers: {})
 
+        stub_request(:post, "https://api.github.com/repos/discourse/discourse/issues/123/comments").
+          with(headers: headers).
+          to_return(status: 200, body: "", headers: {})
+
         stub_request(:post, "https://api.github.com/repos/discourse/discourse/issues/701/comments").
           with(headers: headers).
           to_return(status: 200, body: "", headers: {})
@@ -168,19 +181,23 @@ describe GithubLinkback do
 
       end
 
-      it "returns the URL it linked to and custom fields" do
+      it "returns the URLs it linked to and creates custom fields" do
         links = GithubLinkback.new(post).create
-        expect(links.size).to eq(3)
+        expect(links.size).to eq(4)
 
         expect(links[0].url).to eq(github_commit_link)
         field = GithubLinkback.field_for(github_commit_link)
         expect(post.custom_fields[field]).to be_present
 
-        expect(links[1].url).to eq(github_pr_link)
+        expect(links[1].url).to eq(github_issue_link)
+        field = GithubLinkback.field_for(github_issue_link)
+        expect(post.custom_fields[field]).to be_present
+
+        expect(links[2].url).to eq(github_pr_link)
         field = GithubLinkback.field_for(github_pr_link)
         expect(post.custom_fields[field]).to be_present
 
-        expect(links[2].url).to eq(github_pr_link_wildcard)
+        expect(links[3].url).to eq(github_pr_link_wildcard)
         field = GithubLinkback.field_for(github_pr_link_wildcard)
         expect(post.custom_fields[field]).to be_present
       end

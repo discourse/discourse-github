@@ -7,7 +7,7 @@ class GithubLinkback
 
   class Link
     attr_reader :url, :project, :type
-    attr_accessor :sha, :pr_number
+    attr_accessor :sha, :pr_number, :issue_number
 
     def initialize(url, project, type)
       @url = url
@@ -62,6 +62,17 @@ class GithubLinkback
         link = Link.new(url, project, :pr)
         link.pr_number = pr_number.to_i
         result[url] = link
+      elsif l =~ /https?:\/\/github.com\/([^\/]+)\/([^\/]+)\/issues\/(\d+)/
+        url, org, repo, issue_number = Regexp.last_match.to_a
+        project = "#{org}/#{repo}"
+
+        next if result[url]
+        next if @post.custom_fields[GithubLinkback.field_for(url)].present?
+        next unless is_allowed_project_link?(projects, project)
+
+        link = Link.new(url, project, :issue)
+        link.issue_number = issue_number.to_i
+        result[url] = link
       end
     end
     result.values
@@ -89,7 +100,9 @@ class GithubLinkback
         when :commit
           post_commit(link)
         when :pr
-          post_pr(link)
+          post_pr_or_issue(link, :pr)
+        when :issue
+          post_pr_or_issue(link, :issue)
         else
           next
         end
@@ -109,10 +122,11 @@ class GithubLinkback
 
   private
 
-  def post_pr(link)
-    github_url = "https://api.github.com/repos/#{link.project}/issues/#{link.pr_number}/comments"
+  def post_pr_or_issue(link, type)
+    pr_or_issue_number = link.pr_number || link.issue_number
+    github_url = "https://api.github.com/repos/#{link.project}/issues/#{pr_or_issue_number}/comments"
     comment = I18n.t(
-      'github_linkback.pr_template',
+      type == :pr ? 'github_linkback.pr_template' : 'github_linkback.issue_template',
       title: SiteSetting.title,
       post_url: "#{Discourse.base_url}#{@post.url}"
     )
