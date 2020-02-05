@@ -40,12 +40,24 @@ module DiscourseGithubPlugin
         build_history!(start_at: commit.commit.committer.date)
       end
     rescue Octokit::Error => err
-      if err.is_a?(Octokit::Unauthorized)
-        disable_github_badges_and_inform_admin
+      case err
+      when Octokit::Unauthorized
+        disable_github_badges_and_inform_admin(
+          title: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm_title"),
+          raw: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm",
+                      base_path: Discourse.base_path),
+        )
         Rails.logger.warn("Disabled github_badges_enabled site setting due to invalid GitHub authentication credentials via github_linkback_access_token.")
-        return
+      when Octokit::NotFound
+        disable_github_badges_and_inform_admin(
+          title: I18n.t("github_commits_populator.errors.repository_not_found_pm_title"),
+          raw: I18n.t("github_commits_populator.errors.repository_not_found_pm",
+                      repo_name: @repo.name),
+        )
+        Rails.logger.warn("Disabled github_badges_enabled site setting due to repository Not Found error ")
+      else
+        Rails.logger.warn("#{err.class}: #{err.message}")
       end
-      Rails.logger.warn("#{err.class}: #{err.message}")
     end
 
     private
@@ -149,13 +161,13 @@ module DiscourseGithubPlugin
       "discourse-github-back-commit-#{@repo.name}"
     end
 
-    def disable_github_badges_and_inform_admin
+    def disable_github_badges_and_inform_admin(title, raw)
       SiteSetting.github_badges_enabled = false
       site_admin_usernames = User.where(admin: true).human_users.order('last_seen_at DESC').limit(10).pluck(:username)
       PostCreator.create!(
         Discourse.system_user,
-        title: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm_title"),
-        raw: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm", base_path: Discourse.base_path),
+        title: title,
+        raw: raw,
         archetype: Archetype.private_message,
         target_usernames: site_admin_usernames,
         skip_validations: true
