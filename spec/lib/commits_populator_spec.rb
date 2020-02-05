@@ -28,6 +28,22 @@ describe DiscourseGithubPlugin::CommitsPopulator do
     end
   end
 
+  context "when invalid credentials have been provided for octokit" do
+    before do
+      Octokit::Client.any_instance.expects(:branches).raises(Octokit::NotFound)
+    end
+
+    it "disables github badges and sends a PM to the admin of the site to inform them" do
+      subject.populate!
+      expect(SiteSetting.github_badges_enabled).to eq(false)
+      sent_pm = Post.joins(:topic).includes(:topic).where('topics.archetype = ?', Archetype.private_message).last
+      expect(sent_pm.topic.allowed_users.include?(site_admin1)).to eq(true)
+      expect(sent_pm.topic.allowed_users.include?(site_admin2)).to eq(true)
+      expect(sent_pm.topic.title).to eq(I18n.t("github_commits_populator.errors.repository_not_found_pm_title"))
+      expect(sent_pm.raw).to eq(I18n.t("github_commits_populator.errors.repository_not_found_pm", base_path: Discourse.base_path))
+    end
+  end
+
   context "if some other octokit error is raised" do
     before do
       Octokit::Client.any_instance.expects(:branches).raises(Octokit::Error)

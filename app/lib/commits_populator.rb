@@ -161,7 +161,7 @@ module DiscourseGithubPlugin
       "discourse-github-back-commit-#{@repo.name}"
     end
 
-    def disable_github_badges_and_inform_admin(title, raw)
+    def disable_github_badges_and_inform_admin(title:, raw:)
       SiteSetting.github_badges_enabled = false
       site_admin_usernames = User.where(admin: true).human_users.order('last_seen_at DESC').limit(10).pluck(:username)
       PostCreator.create!(
