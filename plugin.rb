@@ -7,7 +7,7 @@
 # url: https://github.com/discourse/discourse-github
 
 gem 'sawyer', '0.8.2'
-gem 'octokit', '4.15.0'
+gem 'octokit', '4.16.0'
 
 # Site setting validators must be loaded before initialize
 require_relative "app/lib/github_badges_repo_setting_validator.rb"
