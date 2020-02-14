@@ -44,7 +44,13 @@ describe GithubLinkback do
 
   context "#should_enqueue?" do
     let(:post_without_link) { Fabricate.build(:post, raw: "Hello github!") }
-
+    let(:small_action_post) do
+      Fabricate.build(
+        :post,
+        post_type: Post.types[:small_action],
+        raw: 'https://github.com/discourse/discourse/commit/5be9bee2307dd517c26e6ef269471aceba5d5acf'
+      )
+    end
     let(:post_with_link) do
       Fabricate.build(:post, raw: 'https://github.com/discourse/discourse/commit/5be9bee2307dd517c26e6ef269471aceba5d5acf')
     end
@@ -57,6 +63,11 @@ describe GithubLinkback do
     it "returns false without a post" do
       SiteSetting.github_linkback_enabled = true
       expect(GithubLinkback.new(nil).should_enqueue?).to eq(false)
+    end
+
+    it "returns false if the post is not a regular post" do
+      SiteSetting.github_linkback_enabled = true
+      expect(GithubLinkback.new(small_action_post).should_enqueue?).to eq(false)
     end
 
     it "returns false when the post doesn't have the `github.com` in it" do
