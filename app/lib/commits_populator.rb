@@ -41,6 +41,13 @@ module DiscourseGithubPlugin
       end
     rescue Octokit::Error => err
       case err
+      when Octokit::InvalidRepository
+        disable_github_badges_and_inform_admin(
+          title: I18n.t("github_commits_populator.errors.repository_identifier_invalid_pm_title"),
+          raw: I18n.t("github_commits_populator.errors.repository_identifier_invalid_pm",
+                      repo_name: @repo.name),
+        )
+        Rails.logger.warn("Disabled github_badges_enabled site setting due to invalid repository identifier")
       when Octokit::NotFound
         disable_github_badges_and_inform_admin(
           title: I18n.t("github_commits_populator.errors.repository_not_found_pm_title"),

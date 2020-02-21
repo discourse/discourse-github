@@ -40,3 +40,13 @@ en:
         Badges will not be awarded until the name is corrected in
         <a href=\"%{base_path}/admin/site_settings/category/plugins?filter=GitHub\">discourse-github Site Settings</a>
         and "github_badges_enabled" is turned back on.
+      repository_identifier_invalid_pm_title: "Action required for discourse-github plugin"
+      repository_identifier_invalid_pm: |
+        A repository specified in the discourse-github plugin is invalid:
+        %{repo_name}
+
+        They should be specified as `user/repo`.:
+
+        Badges will not be awarded until the name is corrected in
+        <a href=\"%{base_path}/admin/site_settings/category/plugins?filter=GitHub\">discourse-github Site Settings</a>
+        and "github_badges_enabled" is turned back on.
