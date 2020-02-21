@@ -30,16 +30,6 @@ en:
       %{post_url}
   github_commits_populator:
     errors:
-      invalid_octokit_credentials_pm_title: "Action required for discourse-github plugin"
-      invalid_octokit_credentials_pm: "The GitHub credentials provided to the discourse-github plugin are invalid. The \"github badges enabled\" site setting has been disabled, and commits will no longer be populated until the issue is resolved.<br/><br/>Check your \"github linkback access token\" site setting to ensure the token is correct and has permission to all repos via <a href=\"%{base_path}/admin/site_settings/category/plugins?filter=GitHub\">discourse-github Site Settings</a>."
-      repository_not_found_pm_title: "Action required for discourse-github plugin"
-      repository_not_found_pm: |
-        A repository specified in the discourse-github plugin returned a "Not Found"
-        error: %{repo_name}
-
-        Badges will not be awarded until the name is corrected in
-        <a href=\"%{base_path}/admin/site_settings/category/plugins?filter=GitHub\">discourse-github Site Settings</a>
-        and "github_badges_enabled" is turned back on.
       repository_identifier_invalid_pm_title: "Action required for discourse-github plugin"
       repository_identifier_invalid_pm: |
         A repository specified in the discourse-github plugin is invalid:
@@ -50,3 +40,13 @@ en:
         Badges will not be awarded until the name is corrected in
         <a href=\"%{base_path}/admin/site_settings/category/plugins?filter=GitHub\">discourse-github Site Settings</a>
         and "github_badges_enabled" is turned back on.
+      repository_not_found_pm_title: "Action required for discourse-github plugin"
+      repository_not_found_pm: |
+        A repository specified in the discourse-github plugin returned a "Not Found"
+        error: %{repo_name}
+
+        Badges will not be awarded until the name is corrected in
+        <a href=\"%{base_path}/admin/site_settings/category/plugins?filter=GitHub\">discourse-github Site Settings</a>
+        and "github_badges_enabled" is turned back on.
+      invalid_octokit_credentials_pm_title: "Action required for discourse-github plugin"
+      invalid_octokit_credentials_pm: "The GitHub credentials provided to the discourse-github plugin are invalid. The \"github badges enabled\" site setting has been disabled, and commits will no longer be populated until the issue is resolved.<br/><br/>Check your \"github linkback access token\" site setting to ensure the token is correct and has permission to all repos via <a href=\"%{base_path}/admin/site_settings/category/plugins?filter=GitHub\">discourse-github Site Settings</a>."
