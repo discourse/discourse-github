@@ -41,13 +41,6 @@ module DiscourseGithubPlugin
       end
     rescue Octokit::Error => err
       case err
-      when Octokit::Unauthorized
-        disable_github_badges_and_inform_admin(
-          title: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm_title"),
-          raw: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm",
-                      base_path: Discourse.base_path),
-        )
-        Rails.logger.warn("Disabled github_badges_enabled site setting due to invalid GitHub authentication credentials via github_linkback_access_token.")
       when Octokit::NotFound
         disable_github_badges_and_inform_admin(
           title: I18n.t("github_commits_populator.errors.repository_not_found_pm_title"),
@@ -55,6 +48,13 @@ module DiscourseGithubPlugin
                       repo_name: @repo.name),
         )
         Rails.logger.warn("Disabled github_badges_enabled site setting due to repository Not Found error ")
+      when Octokit::Unauthorized
+        disable_github_badges_and_inform_admin(
+          title: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm_title"),
+          raw: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm",
+                      base_path: Discourse.base_path),
+        )
+        Rails.logger.warn("Disabled github_badges_enabled site setting due to invalid GitHub authentication credentials via github_linkback_access_token.")
       else
         Rails.logger.warn("#{err.class}: #{err.message}")
       end
