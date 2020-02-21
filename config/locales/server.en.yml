@@ -45,7 +45,7 @@ en:
         A repository specified in the discourse-github plugin is invalid:
         %{repo_name}
 
-        They should be specified as `user/repo`.:
+        They should be specified as `user/repo`.
 
         Badges will not be awarded until the name is corrected in
         <a href=\"%{base_path}/admin/site_settings/category/plugins?filter=GitHub\">discourse-github Site Settings</a>
