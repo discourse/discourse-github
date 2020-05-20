@@ -14,7 +14,6 @@ require_relative "app/lib/github_badges_repo_setting_validator.rb"
 require_relative "app/lib/github_linkback_access_token_setting_validator.rb"
 
 enabled_site_setting :enable_discourse_github_plugin
-enabled_site_setting_filter :github
 
 after_initialize do
   [
