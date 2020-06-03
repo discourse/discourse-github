@@ -24,6 +24,7 @@ class GithubLinkback
     !!(SiteSetting.github_linkback_enabled? &&
       SiteSetting.enable_discourse_github_plugin? &&
       @post.present? &&
+      @post.post_type == Post.types[:regular] &&
       @post.raw =~ /github\.com/ &&
       Guardian.new.can_see?(@post) &&
       @post.topic.visible?)
