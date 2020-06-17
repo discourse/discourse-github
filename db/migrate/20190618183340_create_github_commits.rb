@@ -3,7 +3,7 @@
 class CreateGithubCommits < ActiveRecord::Migration[5.2]
   def change
     create_table :github_commits do |t|
-      t.references :repo, null: false
+      t.references :repo, null: false # rubocop:disable Discourse/NoAddReferenceOrAliasesActiveRecordMigration
       t.string :sha, limit: 40, null: false
       t.string :email, limit: 513, null: false
       t.timestamp :committed_at, null: false
