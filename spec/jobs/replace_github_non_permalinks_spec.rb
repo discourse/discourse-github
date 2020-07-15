@@ -26,7 +26,12 @@ describe Jobs::ReplaceGithubNonPermalinks do
   describe '#execute' do
     before do
       SiteSetting.queue_jobs = false
-      SiteSetting.onebox_domains_blacklist = "github.com"
+      # TODO Drop after Discourse 2.6.0 release
+      if SiteSetting.respond_to?(:onebox_domains_blacklist)
+        SiteSetting.onebox_domains_blacklist = "github.com"
+      else
+        SiteSetting.onebox_domains_blocklist = "github.com"
+      end
       SiteSetting.github_permalinks_enabled = true
     end
 
