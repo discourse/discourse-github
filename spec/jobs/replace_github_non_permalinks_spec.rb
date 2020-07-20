@@ -30,7 +30,7 @@ describe Jobs::ReplaceGithubNonPermalinks do
       if SiteSetting.respond_to?(:onebox_domains_blacklist)
         SiteSetting.onebox_domains_blacklist = "github.com"
       else
-        SiteSetting.onebox_domains_blocklist = "github.com"
+        SiteSetting.blocked_onebox_domains = "github.com"
       end
       SiteSetting.github_permalinks_enabled = true
     end
