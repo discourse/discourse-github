@@ -15,11 +15,16 @@ describe GithubPermalinks do
 
   context "when it contains github link" do
     let(:post) { Fabricate(:post, raw: "https://github.com/discourse/onebox/blob/master/lib/onebox/engine/gfycat_onebox.rb") }
+
     it "ensures only one job is scheduled right after the editing_grace_period" do
+      freeze_time
+
       Jobs.expects(:cancel_scheduled_job).with(:replace_github_non_permalinks, post_id: post.id).once
       delay = SiteSetting.editing_grace_period + 1
-      Jobs.expects(:enqueue_in).with(delay.seconds, :replace_github_non_permalinks, post_id: post.id, bypass_bump: false).once
-      cpp.replace_github_non_permalinks
+
+      expect_enqueued_with(job: :replace_github_non_permalinks, args: { post_id: post.id, bypass_bump: false }, at: Time.zone.now + delay) do
+        cpp.replace_github_non_permalinks
+      end
     end
   end
 end
