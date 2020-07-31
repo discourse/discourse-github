@@ -45,7 +45,8 @@ module DiscourseGithubPlugin
         disable_github_badges_and_inform_admin(
           title: I18n.t("github_commits_populator.errors.repository_not_found_pm_title"),
           raw: I18n.t("github_commits_populator.errors.repository_not_found_pm",
-                      repo_name: @repo.name),
+                      repo_name: @repo.name,
+                      base_path: Discourse.base_path),
         )
         Rails.logger.warn("Disabled github_badges_enabled site setting due to repository Not Found error ")
       when Octokit::Unauthorized
@@ -62,7 +63,8 @@ module DiscourseGithubPlugin
       disable_github_badges_and_inform_admin(
         title: I18n.t("github_commits_populator.errors.repository_identifier_invalid_pm_title"),
         raw: I18n.t("github_commits_populator.errors.repository_identifier_invalid_pm",
-                    repo_name: @repo.name),
+                    repo_name: @repo.name,
+                    base_path: Discourse.base_path),
       )
       Rails.logger.warn("Disabled github_badges_enabled site setting due to invalid repository identifier")
     end
