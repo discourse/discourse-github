@@ -40,7 +40,7 @@ describe DiscourseGithubPlugin::CommitsPopulator do
       expect(sent_pm.topic.allowed_users.include?(site_admin1)).to eq(true)
       expect(sent_pm.topic.allowed_users.include?(site_admin2)).to eq(true)
       expect(sent_pm.topic.title).to eq(I18n.t("github_commits_populator.errors.repository_not_found_pm_title"))
-      expect(sent_pm.raw).to eq(I18n.t("github_commits_populator.errors.repository_not_found_pm", base_path: Discourse.base_path))
+      expect(sent_pm.raw).to eq(I18n.t("github_commits_populator.errors.repository_not_found_pm", repo_name: repo.name, base_path: Discourse.base_path).strip)
     end
   end
 
@@ -56,7 +56,7 @@ describe DiscourseGithubPlugin::CommitsPopulator do
       expect(sent_pm.topic.allowed_users.include?(site_admin1)).to eq(true)
       expect(sent_pm.topic.allowed_users.include?(site_admin2)).to eq(true)
       expect(sent_pm.topic.title).to eq(I18n.t("github_commits_populator.errors.repository_identifier_invalid_pm_title"))
-      expect(sent_pm.raw).to eq(I18n.t("github_commits_populator.errors.repository_identifier_invalid_pm", base_path: Discourse.base_path))
+      expect(sent_pm.raw).to eq(I18n.t("github_commits_populator.errors.repository_identifier_invalid_pm", repo_name: repo.name, base_path: Discourse.base_path).strip)
     end
   end
 
