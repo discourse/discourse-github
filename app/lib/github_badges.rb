@@ -37,7 +37,7 @@ module DiscourseGithubPlugin
         end
 
         user_emails = {}
-        User.with_email(regular_emails).each do |user|
+        User.real.where(staged: false).with_email(regular_emails).each do |user|
           user_emails[user] = user.emails
         end
 
