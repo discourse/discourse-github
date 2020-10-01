@@ -10,6 +10,7 @@ describe DiscourseGithubPlugin::GithubBadges do
   let(:private_email_contributor) { Fabricate(:user) }
   let(:private_email_contributor2) { Fabricate(:user) }
   let(:merge_commit_user) { Fabricate(:user) }
+  let(:staged_user) { Fabricate(:user, staged: true) }
 
   context 'committer and contributor badges' do
     before do
@@ -74,6 +75,13 @@ describe DiscourseGithubPlugin::GithubBadges do
         committed_at: 1.day.ago,
         role_id: roles[:contributor]
       )
+
+      repo1.commits.create!(
+        sha: "5",
+        email: staged_user.email,
+        committed_at: 1.day.ago,
+        role_id: roles[:contributor]
+      )
     end
 
     it 'granted correctly' do
@@ -89,6 +97,7 @@ describe DiscourseGithubPlugin::GithubBadges do
         bronze_user_repo_2,
         silver_user,
         contributor,
+        staged_user,
         private_email_contributor,
         private_email_contributor2,
         merge_commit_user,
@@ -110,6 +119,9 @@ describe DiscourseGithubPlugin::GithubBadges do
       expect(private_email_contributor.badges.pluck(:name)).to eq([contributor_bronze])
       expect(private_email_contributor2.badges.pluck(:name)).to eq([contributor_bronze])
       expect(silver_user.badges.pluck(:name)).to contain_exactly(committer_bronze, committer_silver)
+
+      # does not grant badges to staged users
+      expect(staged_user.badges.first).to eq(nil)
     end
   end
 end
