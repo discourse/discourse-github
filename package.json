@@ -1,7 +1,10 @@
 {
-  "author": "Discourse",
+  "name": "discourse-github",
+  "version": "0.3.0",
+  "repository": "git@github.com:discourse/discourse-github.git",
+  "author": "Robin Ward, Sam Saffron",
   "license": "MIT",
   "devDependencies": {
-    "eslint-config-discourse": "latest"
+    "eslint-config-discourse": "^1.1.3"
   }
 }

@@ -6,13 +6,13 @@ plugins:
     default: ""
     type: list
   github_linkback_access_token:
-    default: ''
+    default: ""
     secret: true
     validator: "GithubLinkbackAccessTokenSettingValidator"
   github_badges_enabled:
     default: false
   github_badges_repos:
-    default: ''
+    default: ""
     type: list
     validator: "GithubBadgesRepoSettingValidator"
   github_permalinks_enabled:
