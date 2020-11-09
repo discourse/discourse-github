@@ -42,11 +42,23 @@ module DiscourseGithubPlugin
         end
 
         if github_name_email.any?
-          infos = GithubUserInfo.where(screen_name: github_name_email.keys).includes(:user)
+          screen_names =
+          if defined? GithubUserInfo # TODO: Remove once 2.6 stable is released
+            GithubUserInfo.where(screen_name: github_name_email.keys)
+              .includes(:user)
+              .map { |row| [row.user, screen_name] }
+              .to_h
+          else
+            UserAssociatedAccount.where(provider_name: "github")
+              .where("info ->> 'nickname' IN (?)", github_name_email.keys)
+              .includes(:user)
+              .map { |row| [row.user, row.info["nickname"]] }
+              .to_h
+          end
 
-          infos.each do |info|
-            user_emails[info.user] ||= []
-            user_emails[info.user] << github_name_email[info.screen_name]
+          screen_names.each do |user, screen_name|
+            user_emails[user] ||= []
+            user_emails[user] << github_name_email[screen_name]
           end
         end
 

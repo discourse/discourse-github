@@ -52,10 +52,11 @@ describe DiscourseGithubPlugin::GithubBadges do
         role_id: roles[:committer]
       )
 
-      GithubUserInfo.create!(
+      UserAssociatedAccount.create!(
+        provider_name: "github",
         user_id: private_email_contributor.id,
-        screen_name: "bob",
-        github_user_id: 100,
+        info: { nickname: "bob" },
+        provider_uid: 100,
       )
       repo1.commits.create!(
         sha: "123",
@@ -64,10 +65,11 @@ describe DiscourseGithubPlugin::GithubBadges do
         role_id: roles[:contributor]
       )
 
-      GithubUserInfo.create!(
+      UserAssociatedAccount.create!(
+        provider_name: "github",
         user_id: private_email_contributor2.id,
-        screen_name: "joe",
-        github_user_id: 101,
+        info: {nickname: "joe"},
+        provider_uid: 101,
       )
       repo1.commits.create!(
         sha: "124",
