@@ -68,7 +68,7 @@ describe DiscourseGithubPlugin::GithubBadges do
       UserAssociatedAccount.create!(
         provider_name: "github",
         user_id: private_email_contributor2.id,
-        info: {nickname: "joe"},
+        info: { nickname: "joe" },
         provider_uid: 101,
       )
       repo1.commits.create!(
