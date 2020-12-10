@@ -4,11 +4,92 @@ module DiscourseGithubPlugin
   class CommitsPopulator
     MERGE_COMMIT_REGEX = /^Merge pull request/
     HISTORY_COMPLETE = "history-complete"
+    class GraphQLError < StandardError; end
 
     ROLES = {
       committer: 0,
       contributor: 1
     }
+
+    class PaginatedCommits
+      def initialize(octokit, repo, cursor: nil, page_size: 100)
+        @client = octokit
+        @repo = repo
+        @cursor = cursor
+        @page_size = page_size
+        raise ArgumentError, 'page_size arg must be <= 100' if page_size > 100
+        if cursor && !cursor.match?(/^\h{40}\s(\d+)$/)
+          raise ArgumentError, 'cursor must be a 40-characters hex string followed by a space and a number'
+        end
+        fetch_commits
+      end
+
+      def next
+        cursor = next_cursor
+        return unless cursor
+        PaginatedCommits.new(@client, @repo, cursor: cursor, page_size: @page_size)
+      end
+
+      def commits
+        @data.repository.defaultBranchRef.target.history.nodes
+      end
+
+      def next_cursor
+        info = @data.repository.defaultBranchRef.target.history.pageInfo
+        return unless info.hasNextPage
+        info.endCursor
+      end
+
+      private
+
+      def fetch_commits
+        owner, name = @repo.name.split('/', 2)
+        history_args = "first: #{@page_size}"
+        if @cursor
+          history_args += ", after: #{@cursor.inspect}"
+        end
+
+        query = <<~QUERY
+          query {
+            repository(name: #{name.inspect}, owner: #{owner.inspect}) {
+              defaultBranchRef {
+                target {
+                  ... on Commit {
+                    history(#{history_args}) {
+                      pageInfo {
+                        endCursor
+                        hasNextPage
+                      }
+                      nodes {
+                        oid
+                        message
+                        committedDate
+                        associatedPullRequests(first: 1) {
+                          nodes {
+                            author {
+                              login
+                            }
+                            mergedBy {
+                              login
+                            }
+                          }
+                        }
+                        author {
+                          email
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        QUERY
+        response = @client.post("/graphql", { query: query }.to_json)
+        raise GraphQLError, response.errors.inspect if response.errors
+        @data = response.data
+      end
+    end
 
     def initialize(repo)
       @repo = repo
@@ -23,21 +104,32 @@ module DiscourseGithubPlugin
         build_history!
       else
         front_sha = Discourse.redis.get(front_commit_redis_key)
-        front_sha = @repo.commits.order("committed_at DESC").first.sha if !front_sha
-        if removed?(front_sha)
+        if front_sha.present? && removed?(front_sha)
           # there has been a force push, next run will rebuild history
           @repo.commits.delete_all
-          Discourse.redis.del(back_commit_redis_key)
+          Discourse.redis.del(back_cursor_redis_key)
           Discourse.redis.del(front_commit_redis_key)
           return
         end
         fetch_new_commits!(front_sha)
+        front_sha = Discourse.redis.get(front_commit_redis_key)
+        @repo.reload
 
-        back_sha = Discourse.redis.get(back_commit_redis_key)
-        return if back_sha == HISTORY_COMPLETE
-        back_sha = @repo.commits.order("committed_at ASC").first.sha if !back_sha
-        commit = @client.commit(@repo.name, back_sha)
-        build_history!(start_at: commit.commit.committer.date)
+        back_cursor = Discourse.redis.get(back_cursor_redis_key)
+        return if back_cursor == HISTORY_COMPLETE
+        if back_cursor.present?
+          build_history!(cursor: back_cursor)
+        elsif front_sha.present?
+          count = @repo.commits.count
+          build_history!(cursor: "#{front_sha} #{count - 1}")
+        else
+          # this is a bad state that we should never be in
+          # But in case it happens, easiest way to recover
+          # is to start from scratch.
+          @repo.commits.delete_all
+          Discourse.redis.del(back_cursor_redis_key)
+          Discourse.redis.del(front_commit_redis_key)
+        end
       end
     rescue Octokit::Error => err
       case err
@@ -71,36 +163,35 @@ module DiscourseGithubPlugin
 
     private
 
-    def is_pr?(commit)
-      commit.commit.author.name != commit.commit.committer.name && commit.commit.committer.name != "GitHub"
-      # GitHub has a special account that acts as the committer of commits that are
-      # created via the UI. For example when you merge your own PR (but not someone else's)
-      # If this account is the committer of a commit then don't count it as a PR
+    def is_contribution?(commit)
+      pr = commit.associatedPullRequests.nodes.first
+      pr && pr.author && pr.mergedBy && pr.author.login != pr.mergedBy.login
     end
 
     def fetch_new_commits!(stop_at)
-      batch = @client.commits(@repo.name)
-      response = @client.last_response
+      paginator = PaginatedCommits.new(@client, @repo, page_size: 10)
+      batch = paginator.commits
       done = false
       commits = []
+      recent_commits = stop_at.present? ? [] : @repo.commits.order("committed_at DESC").first(100).pluck(:sha)
       while !done
         batch.each do |c|
-          if c.sha == stop_at
+          if c.oid == stop_at || recent_commits.include?(c.oid)
             done = true
             break
           end
-          commits << commit_to_hash(c)
+          commits << c
         end
         break if done
-        response = response.rels[:next]&.get
-        batch = response&.data || []
-        done = batch.size == 0
+        paginator = paginator.next
+        batch = paginator&.commits || []
+        break if batch.empty?
       end
       return if commits.size == 0
       existing_shas = @repo.commits.pluck(:sha)
-      commits.reject! { |c| existing_shas.include?(c[:sha]) }
-      batch_to_db(commits, simplified: true)
-      set_front_commit(commits.first[:sha])
+      commits.reject! { |c| existing_shas.include?(c.oid) }
+      batch_to_db(commits)
+      set_front_commit(commits.first.oid)
     end
 
     # detect if a force push happened and commit is lost
@@ -110,27 +201,27 @@ module DiscourseGithubPlugin
       commit.sha != found.sha
     end
 
-    def build_history!(start_at: nil)
-      params = start_at.present? ? { until: start_at } : {}
-      batch = @client.commits(@repo.name, params)
-      response = @client.last_response
-      batch.shift if start_at.present?
-      set_front_commit(batch.first.sha) if !start_at.present?
+    def build_history!(cursor: nil)
+      paginator = PaginatedCommits.new(@client, @repo, cursor: cursor, page_size: 100)
+      batch = paginator.commits
+      return if batch.empty?
+      set_front_commit(batch.first.oid) if cursor.blank?
 
       while batch.size > 0
         batch_to_db(batch)
-        set_back_commit(batch.last.sha)
+        next_cursor = paginator.next_cursor
+        set_back_cursor(next_cursor) if next_cursor
 
-        response = response.rels[:next]&.get
-        batch = response&.data || []
+        paginator = paginator.next
+        batch = paginator&.commits || []
       end
-      set_back_commit(HISTORY_COMPLETE)
+      set_back_cursor(HISTORY_COMPLETE)
     end
 
-    def batch_to_db(batch, simplified: false)
+    def batch_to_db(batch)
       fragments = []
       batch.each do |c|
-        hash = simplified ? c : commit_to_hash(c)
+        hash = commit_to_hash(c)
         fragments << DB.sql_fragment(<<~SQL, hash)
           (:repo_id, :sha, :email, :committed_at, :role_id, :merge_commit, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         SQL
@@ -143,12 +234,12 @@ module DiscourseGithubPlugin
 
     def commit_to_hash(commit)
       {
-        sha: commit.sha,
-        email: commit.commit.author.email,
+        sha: commit.oid,
+        email: commit.author.email,
         repo_id: @repo.id,
-        committed_at: commit.commit.committer.date,
-        merge_commit: commit.commit.message.match?(MERGE_COMMIT_REGEX),
-        role_id: is_pr?(commit) ? ROLES[:contributor] : ROLES[:committer]
+        committed_at: commit.committedDate,
+        merge_commit: commit.message.match?(MERGE_COMMIT_REGEX),
+        role_id: is_contribution?(commit) ? ROLES[:contributor] : ROLES[:committer]
       }
     end
 
@@ -156,8 +247,8 @@ module DiscourseGithubPlugin
       Discourse.redis.set(front_commit_redis_key, sha)
     end
 
-    def set_back_commit(sha)
-      Discourse.redis.set(back_commit_redis_key, sha)
+    def set_back_cursor(cursor)
+      Discourse.redis.set(back_cursor_redis_key, cursor)
     end
 
     def front_commit_redis_key
@@ -165,9 +256,12 @@ module DiscourseGithubPlugin
       "discourse-github-front-commit-#{@repo.name}"
     end
 
-    def back_commit_redis_key
-      # this key should refer to the OLDEST commit we have in the db
-      "discourse-github-back-commit-#{@repo.name}"
+    def back_cursor_redis_key
+      # this key should refer to the cursor that lets us continue
+      # building history from the point we reached in the previous run
+      # that couldn't continue for whatever reasons
+      # e.g., if we got rate-limited by github
+      "discourse-github-back-cursor-#{@repo.name}"
     end
 
     def disable_github_badges_and_inform_admin(title:, raw:)
