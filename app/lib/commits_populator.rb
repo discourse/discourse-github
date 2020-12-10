@@ -25,13 +25,19 @@ module DiscourseGithubPlugin
       end
 
       def next
-        info = @data.repository.defaultBranchRef.target.history.pageInfo
-        return unless info.hasNextPage
-        PaginatedCommits.new(@client, @repo, cursor: info.endCursor, page_size: @page_size)
+        cursor = next_cursor
+        return unless cursor
+        PaginatedCommits.new(@client, @repo, cursor: cursor, page_size: @page_size)
       end
 
       def commits
         @data.repository.defaultBranchRef.target.history.nodes
+      end
+
+      def next_cursor
+        info = @data.repository.defaultBranchRef.target.history.pageInfo
+        return unless info.hasNextPage
+        info.endCursor
       end
 
       private
@@ -98,21 +104,32 @@ module DiscourseGithubPlugin
         build_history!
       else
         front_sha = Discourse.redis.get(front_commit_redis_key)
-        front_sha = @repo.commits.order("committed_at DESC").first.sha if !front_sha
-        if removed?(front_sha)
+        if front_sha.present? && removed?(front_sha)
           # there has been a force push, next run will rebuild history
           @repo.commits.delete_all
-          Discourse.redis.del(back_commit_redis_key)
+          Discourse.redis.del(back_cursor_redis_key)
           Discourse.redis.del(front_commit_redis_key)
           return
         end
         fetch_new_commits!(front_sha)
+        front_sha = Discourse.redis.get(front_commit_redis_key)
+        @repo.reload
 
-        back_sha = Discourse.redis.get(back_commit_redis_key)
-        return if back_sha == HISTORY_COMPLETE
-        back_sha = @repo.commits.order("committed_at ASC").first.sha if !back_sha
-        commit = @client.commit(@repo.name, back_sha)
-        build_history!(after: commit.sha)
+        back_cursor = Discourse.redis.get(back_cursor_redis_key)
+        return if back_cursor == HISTORY_COMPLETE
+        if back_cursor.present?
+          build_history!(cursor: back_cursor)
+        elsif front_sha.present?
+          count = @repo.commits.count
+          build_history!(cursor: "#{front_sha} #{count - 1}")
+        else
+          # this is a bad state that we should never be in
+          # But in case it happens, easiest way to recover
+          # is to start from scratch.
+          @repo.commits.delete_all
+          Discourse.redis.del(back_cursor_redis_key)
+          Discourse.redis.del(front_commit_redis_key)
+        end
       end
     rescue Octokit::Error => err
       case err
@@ -156,9 +173,10 @@ module DiscourseGithubPlugin
       batch = paginator.commits
       done = false
       commits = []
+      recent_commits = stop_at.present? ? [] : @repo.commits.order("committed_at DESC").first(100).pluck(:sha)
       while !done
         batch.each do |c|
-          if c.oid == stop_at
+          if c.oid == stop_at || recent_commits.include?(c.oid)
             done = true
             break
           end
@@ -183,21 +201,21 @@ module DiscourseGithubPlugin
       commit.sha != found.sha
     end
 
-    def build_history!(after: nil)
-      cursor = "#{after} 0" if after.present?
-      paginator = PaginatedCommits.new(@client, @repo, cursor: cursor, page_size: 70)
+    def build_history!(cursor: nil)
+      paginator = PaginatedCommits.new(@client, @repo, cursor: cursor, page_size: 100)
       batch = paginator.commits
       return if batch.empty?
-      set_front_commit(batch.first.oid) if after.blank?
+      set_front_commit(batch.first.oid) if cursor.blank?
 
       while batch.size > 0
         batch_to_db(batch)
-        set_back_commit(batch.last.oid)
+        next_cursor = paginator.next_cursor
+        set_back_cursor(next_cursor) if next_cursor
 
         paginator = paginator.next
         batch = paginator&.commits || []
       end
-      set_back_commit(HISTORY_COMPLETE)
+      set_back_cursor(HISTORY_COMPLETE)
     end
 
     def batch_to_db(batch)
@@ -229,8 +247,8 @@ module DiscourseGithubPlugin
       Discourse.redis.set(front_commit_redis_key, sha)
     end
 
-    def set_back_commit(sha)
-      Discourse.redis.set(back_commit_redis_key, sha)
+    def set_back_cursor(cursor)
+      Discourse.redis.set(back_cursor_redis_key, cursor)
     end
 
     def front_commit_redis_key
@@ -238,9 +256,12 @@ module DiscourseGithubPlugin
       "discourse-github-front-commit-#{@repo.name}"
     end
 
-    def back_commit_redis_key
-      # this key should refer to the OLDEST commit we have in the db
-      "discourse-github-back-commit-#{@repo.name}"
+    def back_cursor_redis_key
+      # this key should refer to the cursor that lets us continue
+      # building history from the point we reached in the previous run
+      # that couldn't continue for whatever reasons
+      # e.g., if we got rate-limited by github
+      "discourse-github-back-cursor-#{@repo.name}"
     end
 
     def disable_github_badges_and_inform_admin(title:, raw:)
