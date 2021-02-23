@@ -1,5 +1,7 @@
 # Discourse Github
 
+https://meta.discourse.org/t/discourse-github/99895/
+
 This plugin combines functionality of deprecated github_badges and discourse-github-linkback plugins.
 
 ### Installation
