@@ -197,6 +197,7 @@ module DiscourseGithubPlugin
     # detect if a force push happened and commit is lost
     def removed?(sha)
       commit = @client.commit(@repo.name, sha)
+      return true if commit.commit.nil?
       found = @client.commits(@repo.name, until: commit.commit.committer.date, page: 1, per_page: 1).first
       commit.sha != found.sha
     end
