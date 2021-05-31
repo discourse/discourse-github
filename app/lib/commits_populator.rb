@@ -87,6 +87,7 @@ module DiscourseGithubPlugin
         QUERY
         response = @client.post("/graphql", { query: query }.to_json)
         raise GraphQLError, response.errors.inspect if response.errors
+        raise GraphQLError, response.message if !response.data
         @data = response.data
       end
     end

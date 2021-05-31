@@ -71,6 +71,38 @@ describe DiscourseGithubPlugin::CommitsPopulator do
     end
   end
 
+  context "if GraphQL returns no data" do
+    before do
+      branches_body = <<~JSON
+        [
+          {
+            "name": "add-group-css-properties",
+            "commit": {
+              "sha": "0d67b6307042803c351599de715023841cfa9356",
+              "url": "https://api.github.com/repos/discourse/discourse/commits/0d67b6307042803c351599de715023841cfa9356"
+            },
+            "protected": false
+          }
+        ]
+      JSON
+
+      graphql_response = <<~JSON
+        {
+          "message": "Bad credentials",
+          "documentation_url": "https://docs.github.com/graphql"
+        }
+      JSON
+
+      stub_request(:get, "https://api.github.com/repos/discourse/discourse/branches?per_page=100").to_return(status: 200, body: branches_body)
+      stub_request(:post, "https://api.github.com/graphql")
+        .to_return(status: 200, body: graphql_response, headers: { "content-type": "application/json" })
+    end
+
+    it "simply logs the error and does nothing else" do
+      expect { subject.populate! }.to raise_error(described_class::GraphQLError)
+    end
+  end
+
   context "if github_badges_enabled is false" do
     before do
       SiteSetting.github_badges_enabled = false
