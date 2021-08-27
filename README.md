@@ -16,7 +16,9 @@ Assign badges to your users based on GitHub contributions.
 
 1. Enable `github badges enabled` in Settings -> Plugins.
 
-2. Add URL of the GitHub repo to scan for contributions to the `github badges repo` site setting.
+2. Generate an access token on Github. Be sure to give it only the `public_repo` scope. Paste that token into the `github linkback access token` setting.
+
+3. Add URL of the GitHub repo to scan for contributions to the `github badges repo` site setting.
 
 ### Github Linkback
 
