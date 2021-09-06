@@ -96,6 +96,8 @@ class GithubLinkback
 
     DistributedMutex.synchronize("github_linkback_#{@post.id}") do
       links = github_links
+      return [] if links.length() > SiteSetting.github_linkback_maximum_links
+
       links.each do |link|
         case link.type
         when :commit
