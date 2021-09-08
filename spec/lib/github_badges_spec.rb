@@ -125,5 +125,18 @@ describe DiscourseGithubPlugin::GithubBadges do
       # does not grant badges to staged users
       expect(staged_user.badges.first).to eq(nil)
     end
+
+    it 'does not update user title if badge is not allowed to be used as a title' do
+      DiscourseGithubPlugin::GithubBadges.grant!
+      silver_comitter_badge = Badge.find_by(name: DiscourseGithubPlugin::GithubBadges::COMMITER_BADGE_NAME_SILVER)
+
+      silver_comitter_badge.update!(enabled: true)
+      DiscourseGithubPlugin::GithubBadges.grant!
+      expect(silver_user.reload.title).to eq(nil)
+
+      silver_comitter_badge.update!(allow_title: true)
+      DiscourseGithubPlugin::GithubBadges.grant!
+      expect(silver_user.reload.title).to eq(silver_comitter_badge.name)
+    end
   end
 end
