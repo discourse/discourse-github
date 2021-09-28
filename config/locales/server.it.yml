@@ -1,8 +1,14 @@
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
+#
+# To work with us on translations, join this project:
+# https://translate.discourse.org/
+
 it:
   site_settings:
     github_linkback_enabled: "Collega gli issue di github alle relative discussioni sul forum"
     github_linkback_projects: "Elenco dei progetti da collegare al forum"
-    github_linkback_access_token: "Un token di accesso valido per l'utente che invierà il collegamento"
+    github_linkback_access_token: 'Un token di accesso valido per l''utente che invierà il collegamento'
   github_linkback:
     commit_template: |
       This commit has been mentioned on **%{title}**. There might be relevant details there:
