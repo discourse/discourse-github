@@ -5,3 +5,5 @@
 # https://translate.discourse.org/
 
 he:
+  replace_github_link:
+    edit_reason: "הקישור ל־GitHub הוחלף בקישור קבוע"
