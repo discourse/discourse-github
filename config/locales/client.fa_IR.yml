@@ -5,3 +5,5 @@
 # https://translate.discourse.org/
 
 fa_IR:
+  replace_github_link:
+    edit_reason: "پیوند گیت‌هاب با یک پیوند دائمی جایگزین شد"

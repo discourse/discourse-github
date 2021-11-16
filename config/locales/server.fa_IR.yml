@@ -5,3 +5,7 @@
 # https://translate.discourse.org/
 
 fa_IR:
+  site_settings:
+    enable_discourse_github_plugin: "افزونه discourse-github را فعال کنید"
+    github_permalinks_enabled: "فعال کردن بازنویسی پیوند دائمی گیت‌هاب"
+    github_badges_enabled: "فعال کردن نشان‌های گیت‌هاب"
