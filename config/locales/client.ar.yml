@@ -5,3 +5,5 @@
 # https://translate.discourse.org/
 
 ar:
+  replace_github_link:
+    edit_reason: "تم استبدال رابط Github برابط دائم"

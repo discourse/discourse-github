@@ -5,3 +5,60 @@
 # https://translate.discourse.org/
 
 ar:
+  site_settings:
+    enable_discourse_github_plugin: "قم بتمكين المكوِّن الإضافي discourse-github"
+    github_linkback_enabled: "ربط مشاكل GitHub بمناقشات المنتدى"
+    github_linkback_projects: "قائمة المشاريع التي يمكن ربطها مرة أخرى"
+    github_linkback_access_token: 'رمز وصول صالح للمستخدم الذي سيقوم بنشر الرابط وعد الالتزامات/المساهمات لمنح الشارات راجع <a href="https://meta.discourse.org/t/99895">هنا</a> للحصول على إرشادات حول كيفية الحصول على الرمز المميز.'
+    github_permalinks_enabled: "تمكين الكتابة فوق الارتباط الثابت GitHub"
+    github_permalinks_exclude: "اسم الملف أو الدليل الذي يجب استبعاده من الكتابة فوق الرابط الثابت. قدم فقط اسم الملف أو المسار الكامل: user / repository / Optional-directory / filename"
+    github_badges_enabled: "تمكين شارات GitHub"
+    github_badges_repos: "عناوين URL الخاصة بـ GitHub repos للبحث عن المساهمات والالتزامات"
+    github_silver_badge_min_commits: "أقل عدد من عمليات الإيداع للشارة الفضية"
+    github_gold_badge_min_commits: "أقل عدد من الالتزامات للحصول على الشارة الذهبية"
+    errors:
+      invalid_badge_repo: "يجب عليك تقديم عنوان URL لـ GitHub أو اسم المستودع بالتنسيق github_user / repository_name"
+      invalid_github_linkback_access_token: "يجب عليك تقديم رمز وصول صالح إلى رابط GitHub والذي يمكنه الوصول إلى مستودعات الشارة التي قدمتها."
+  github_linkback:
+    commit_template: |
+      تم ذكر هذا الالتزام في **%{title}**. قد تكون هناك تفاصيل ذات صلة:
+
+      %{post_url}
+    pr_template: |
+      تم ذكر طلب السحب هذا في **%{title}**. قد تكون هناك تفاصيل ذات صلة:
+
+      %{post_url}
+    issue_template: |
+      تم ذكر هذه المشكلة في **%{title}**. قد تكون هناك تفاصيل ذات صلة:
+
+      %{post_url}
+  github_commits_populator:
+    errors:
+      repository_identifier_invalid_pm_title: "الإجراء المطلوب للمكوِّن الإضافي discourse-github"
+      repository_identifier_invalid_pm: |
+        المستودع المحدد في البرنامج المساعد discourse-github غير صالح:
+        %{repo_name}
+
+        يجب تحديدها كـ `user / repo`.
+
+        لن يتم منح الشارات حتى يتم تصحيح الاسم في
+        <a href="%{base_path}/admin/site_settings/category/plugins?filter=GitHub">إعدادات discourse-github</a>
+        وإعادة تشغيل "github_badges_enabled".
+      repository_not_found_pm_title: "الإجراء المطلوب للمكوِّن الإضافي discourse-github"
+      repository_not_found_pm: |
+        المستودع المحدد في البرنامج المساعد discourse-github غير موجود:
+        %{repo_name}
+
+        يجب تحديدها كـ `user / repo`.
+
+        لن يتم منح الشارات حتى يتم تصحيح الاسم في
+        <a href="%{base_path}/admin/site_settings/category/plugins?filter=GitHub">إعدادات discourse-github</a>
+        وإعادة تشغيل "github_badges_enabled".
+      invalid_octokit_credentials_pm_title: "الإجراء المطلوب للمكوِّن الإضافي discourse-github"
+      invalid_octokit_credentials_pm: |
+        بيانات اعتماد GitHub المقدمة للمكوِّن الإضافي discourse-github غير صالحة. تم تعطيل إعداد "تمكين شارات github \ الموقع
+        ، ولن يتم ملء الالتزامات حتى يتم حل المشكلة.
+
+        تحقق من إعداد موقع "رمز الوصول إلى رابط github" للتأكد من صحة الرمز المميز ولديه إذن لجميع مستودعات إعادة repos
+        عبر
+        <a href="%{base_path}/admin/site_settings/category/plugins?filter=GitHub">إعدادات discourse-github</a>.
