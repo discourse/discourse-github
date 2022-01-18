@@ -5,3 +5,5 @@
 # https://translate.discourse.org/
 
 zh_CN:
+  replace_github_link:
+    edit_reason: "Github 链接被替换为永久链接"
