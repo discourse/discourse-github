@@ -5,3 +5,5 @@
 # https://translate.discourse.org/
 
 es:
+  replace_github_link:
+    edit_reason: "El enlace de Github ha sido sustituido por un enlace permanente"
