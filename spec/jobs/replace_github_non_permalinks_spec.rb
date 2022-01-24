@@ -25,17 +25,15 @@ describe Jobs::ReplaceGithubNonPermalinks do
   describe '#execute' do
     before do
       SiteSetting.queue_jobs = false
-      # TODO Drop after Discourse 2.6.0 release
-      if SiteSetting.respond_to?(:blocked_onebox_domains)
-        SiteSetting.blocked_onebox_domains = "github.com"
-      else
-        SiteSetting.onebox_domains_blacklist = "github.com"
-      end
       SiteSetting.github_permalinks_enabled = true
     end
 
     it 'replaces link with permanent link' do
-      post = Fabricate(:post, raw: "#{github_url}")
+      stub_request(:head, github_permanent_url).to_return(status: 200, body: "", headers: {})
+      stub_request(:get, "https://raw.githubusercontent.com/test/onebox/815ea9c0a8ffebe7bd7fcd34c10ff28c7a6b6974/lib/onebox/engine/github_blob_onebox.rb")
+        .to_return(status: 200, body: "", headers: {})
+
+      post = Fabricate(:post, raw: github_url)
       job.execute(post_id: post.id)
       post.reload
 
