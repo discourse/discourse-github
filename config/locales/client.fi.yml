@@ -5,3 +5,5 @@
 # https://translate.discourse.org/
 
 fi:
+  replace_github_link:
+    edit_reason: "Github-linkki korvattiin pysyvällä linkillä"

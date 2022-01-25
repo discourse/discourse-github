@@ -5,3 +5,5 @@
 # https://translate.discourse.org/
 
 ja:
+  replace_github_link:
+    edit_reason: "GitHub リンクはパーマリンクに置き換えられました"
