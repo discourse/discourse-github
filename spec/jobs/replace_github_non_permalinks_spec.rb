@@ -57,6 +57,8 @@ describe Jobs::ReplaceGithubNonPermalinks do
     end
 
     it "works with multiple github urls in the post" do
+      stub_request(:get, github_permanent_url).to_return(status: 200, body: "")
+      stub_request(:get, github_permanent_url2.gsub(/#.+$/, "")).to_return(status: 200, body: "")
       post = Fabricate(:post, raw: "#{github_url} #{github_url2} htts://github.com")
       job.execute(post_id: post.id)
       post.reload
