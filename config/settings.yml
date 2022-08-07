@@ -9,6 +9,9 @@ plugins:
     default: ""
     secret: true
     validator: "GithubLinkbackAccessTokenSettingValidator"
+  github_linkback_maximum_links:
+    default: 25
+    min: 1
   github_badges_enabled:
     default: false
   github_badges_repos:
