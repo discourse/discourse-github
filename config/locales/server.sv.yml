@@ -10,6 +10,7 @@ sv:
     github_linkback_enabled: "Länka GitHub-ärenden tillbaka till forumdiskussioner"
     github_linkback_projects: "Lista över projekt att länka tillbaka från"
     github_linkback_access_token: 'En giltig åtkomsttoken för användaren som lägger upp återlänken samt för att räkna åtaganden/bidrag för att ge märken. Se <a href="https://meta.discourse.org/t/99895">här</a> för instruktioner om hur du skaffar en token.'
+    github_linkback_maximum_links: "Maximalt antal återlänkar att skapa från ett enda inlägg. När ett inlägg innehåller fler länkar skapas inga."
     github_permalinks_enabled: "Aktivera överskrivning av GitHub-permalänk"
     github_permalinks_exclude: "Filnamn eller katalog som bör uteslutas från permalänksöverskrivningar. Ange endast filnamn eller fullständig sökväg: user/repository/optional-directory/filname"
     github_badges_enabled: "Aktivera GitHub-märken"

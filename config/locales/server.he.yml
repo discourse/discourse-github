@@ -10,6 +10,7 @@ he:
     github_linkback_enabled: "קישור תקלות ב־GitHub בחזרה לדיונים בפורום"
     github_linkback_projects: "רשימות של מיזמים לקשר מהם בחזרה"
     github_linkback_access_token: 'אסימון גישה תקף למשתמש שיפרסם את הקישור החוזה ולספירת הגשות/תרומות כדי להעניק עיטורים. ניתן לעיין <a href="https://meta.discourse.org/t/99895">כאן</a> להנחיות איך לקבל את האסימון.'
+    github_linkback_maximum_links: "מספר הקישורים החוזרים המרבי ליצירה מפוסט יחיד. כאשר פוסט מכיל יותר קישורים, לא נוצרים כלל."
     github_permalinks_enabled: "הפעלת שכתוב כתובות קבועות של GitHub"
     github_permalinks_exclude: "שם קובץ או תיקייה שיוחרגו משכתובי הקישורים הקבועים. יש לספק שם קובץ או נתיב מלא בלבד: user/repository/optional-directory/filename"
     github_badges_enabled: "הפעלת עיטורים של GitHub"
