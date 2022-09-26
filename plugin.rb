@@ -6,8 +6,8 @@
 # authors: Robin Ward, Sam Saffron
 # url: https://github.com/discourse/discourse-github
 
-gem 'sawyer', '0.8.2'
-gem 'octokit', '4.22.0'
+gem 'sawyer', '0.9.2'
+gem 'octokit', '5.6.1'
 
 # Site setting validators must be loaded before initialize
 require_relative "app/lib/github_badges_repo_setting_validator.rb"
