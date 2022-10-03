@@ -12,7 +12,7 @@ describe DiscourseGithubPlugin::GithubBadges do
   let(:merge_commit_user) { Fabricate(:user) }
   let(:staged_user) { Fabricate(:user, staged: true) }
 
-  context 'committer and contributor badges' do
+  describe 'committer and contributor badges' do
     before do
       roles = DiscourseGithubPlugin::CommitsPopulator::ROLES
       SiteSetting.github_badges_repos = "https://github.com/org/repo1.git|https://github.com/org/repo2.git"

@@ -80,7 +80,7 @@ describe GithubLinkback do
       expect(GithubLinkback.new(post_with_link).should_enqueue?).to eq(true)
     end
 
-    context "private_message" do
+    describe "private_message" do
       it "doesn't enqueue private messages" do
         SiteSetting.github_linkback_enabled = true
         private_topic = Fabricate(:private_message_topic)
@@ -93,7 +93,7 @@ describe GithubLinkback do
       end
     end
 
-    context "unlisted topics" do
+    describe "unlisted topics" do
       it "doesn't enqueue unlisted topics" do
         SiteSetting.github_linkback_enabled = true
         unlisted_topic = Fabricate(:topic, visible: false)
