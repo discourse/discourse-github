@@ -42,7 +42,7 @@ describe GithubLinkback do
     )
   end
 
-  context "#should_enqueue?" do
+  describe "#should_enqueue?" do
     let(:post_without_link) { Fabricate.build(:post, raw: "Hello github!") }
     let(:small_action_post) do
       Fabricate.build(
@@ -107,7 +107,7 @@ describe GithubLinkback do
     end
   end
 
-  context "#github_links" do
+  describe "#github_links" do
     it "returns an empty array with no projects" do
       SiteSetting.github_linkback_projects = ""
       links = GithubLinkback.new(post).github_links
@@ -154,7 +154,7 @@ describe GithubLinkback do
     end
   end
 
-  context "#create" do
+  describe "#create" do
     before do
       SiteSetting.github_linkback_projects = "discourse/discourse|discourse/*"
     end
