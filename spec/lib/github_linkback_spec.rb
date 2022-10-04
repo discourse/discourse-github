@@ -42,7 +42,7 @@ describe GithubLinkback do
     )
   end
 
-  context "#should_enqueue?" do
+  describe "#should_enqueue?" do
     let(:post_without_link) { Fabricate.build(:post, raw: "Hello github!") }
     let(:small_action_post) do
       Fabricate.build(
@@ -80,7 +80,7 @@ describe GithubLinkback do
       expect(GithubLinkback.new(post_with_link).should_enqueue?).to eq(true)
     end
 
-    context "private_message" do
+    describe "private_message" do
       it "doesn't enqueue private messages" do
         SiteSetting.github_linkback_enabled = true
         private_topic = Fabricate(:private_message_topic)
@@ -93,7 +93,7 @@ describe GithubLinkback do
       end
     end
 
-    context "unlisted topics" do
+    describe "unlisted topics" do
       it "doesn't enqueue unlisted topics" do
         SiteSetting.github_linkback_enabled = true
         unlisted_topic = Fabricate(:topic, visible: false)
@@ -107,7 +107,7 @@ describe GithubLinkback do
     end
   end
 
-  context "#github_links" do
+  describe "#github_links" do
     it "returns an empty array with no projects" do
       SiteSetting.github_linkback_projects = ""
       links = GithubLinkback.new(post).github_links
@@ -154,7 +154,7 @@ describe GithubLinkback do
     end
   end
 
-  context "#create" do
+  describe "#create" do
     before do
       SiteSetting.github_linkback_projects = "discourse/discourse|discourse/*"
     end
