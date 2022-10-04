@@ -104,21 +104,24 @@ module DiscourseGithubPlugin
       granter.grant!
     end
 
+    def self.ensure_badge(name, attrs)
+      badge = Badge.find_by("name ILIKE ?", name)
+      badge ||= Badge.create!(name: name, **attrs)
+      badge
+    end
+
     def self.contributor_badges
-      bronze = Badge.find_by("name ILIKE ?", BADGE_NAME_BRONZE)
-      bronze ||= Badge.create!(name: BADGE_NAME_BRONZE,
+      bronze = ensure_badge(BADGE_NAME_BRONZE,
         description: 'Contributed an accepted pull request',
         badge_type_id: 3
       )
 
-      silver = Badge.find_by("name ILIKE ?", BADGE_NAME_SILVER)
-      silver ||= Badge.create!(name: BADGE_NAME_SILVER,
+      silver = ensure_badge(BADGE_NAME_SILVER,
         description: 'Contributed 25 accepted pull requests',
         badge_type_id: 2
       )
 
-      gold = Badge.find_by("name ILIKE ?", BADGE_NAME_GOLD)
-      gold ||= Badge.create!(name: BADGE_NAME_GOLD,
+      gold = ensure_badge(BADGE_NAME_GOLD,
         description: 'Contributed 250 accepted pull requests',
         badge_type_id: 1
       )
@@ -127,22 +130,19 @@ module DiscourseGithubPlugin
     end
 
     def self.committer_badges
-      bronze = Badge.find_by("name ILIKE ?", COMMITTER_BADGE_NAME_BRONZE)
-      bronze ||= Badge.create!(name: COMMITTER_BADGE_NAME_BRONZE,
+      bronze = ensure_badge(COMMITTER_BADGE_NAME_BRONZE,
         description: 'Created a commit',
         enabled: false,
         badge_type_id: 3
       )
 
-      silver = Badge.find_by("name ILIKE ?", COMMITTER_BADGE_NAME_SILVER)
-      silver ||= Badge.create!(name: COMMITTER_BADGE_NAME_SILVER,
+      silver = ensure_badge(COMMITTER_BADGE_NAME_SILVER,
         description: 'Created 25 commits',
         enabled: false,
         badge_type_id: 2
       )
 
-      gold = Badge.find_by("name ILIKE ?", COMMITTER_BADGE_NAME_GOLD)
-      gold ||= Badge.create!(name: COMMITTER_BADGE_NAME_GOLD,
+      gold = ensure_badge(COMMITTER_BADGE_NAME_GOLD,
         description: 'Created 1000 commits',
         enabled: false,
         badge_type_id: 1
