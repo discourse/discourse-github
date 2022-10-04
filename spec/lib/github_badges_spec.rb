@@ -128,15 +128,15 @@ describe DiscourseGithubPlugin::GithubBadges do
 
     it 'does not update user title if badge is not allowed to be used as a title' do
       DiscourseGithubPlugin::GithubBadges.grant!
-      silver_comitter_badge = Badge.find_by(name: DiscourseGithubPlugin::GithubBadges::COMMITTER_BADGE_NAME_SILVER)
+      silver_committer_badge = Badge.find_by(name: DiscourseGithubPlugin::GithubBadges::COMMITTER_BADGE_NAME_SILVER)
 
-      silver_comitter_badge.update!(enabled: true)
+      silver_committer_badge.update!(enabled: true)
       DiscourseGithubPlugin::GithubBadges.grant!
       expect(silver_user.reload.title).to eq(nil)
 
-      silver_comitter_badge.update!(allow_title: true)
+      silver_committer_badge.update!(allow_title: true)
       DiscourseGithubPlugin::GithubBadges.grant!
-      expect(silver_user.reload.title).to eq(silver_comitter_badge.name)
+      expect(silver_user.reload.title).to eq(silver_committer_badge.name)
     end
   end
 end
