@@ -91,8 +91,8 @@ describe DiscourseGithubPlugin::GithubBadges do
       DiscourseGithubPlugin::GithubBadges.grant!
 
       contributor_bronze = DiscourseGithubPlugin::GithubBadges::BADGE_NAME_BRONZE
-      committer_bronze = DiscourseGithubPlugin::GithubBadges::COMMITER_BADGE_NAME_BRONZE
-      committer_silver = DiscourseGithubPlugin::GithubBadges::COMMITER_BADGE_NAME_SILVER
+      committer_bronze = DiscourseGithubPlugin::GithubBadges::COMMITTER_BADGE_NAME_BRONZE
+      committer_silver = DiscourseGithubPlugin::GithubBadges::COMMITTER_BADGE_NAME_SILVER
 
       users = [
         bronze_user,
@@ -128,7 +128,7 @@ describe DiscourseGithubPlugin::GithubBadges do
 
     it 'does not update user title if badge is not allowed to be used as a title' do
       DiscourseGithubPlugin::GithubBadges.grant!
-      silver_comitter_badge = Badge.find_by(name: DiscourseGithubPlugin::GithubBadges::COMMITER_BADGE_NAME_SILVER)
+      silver_comitter_badge = Badge.find_by(name: DiscourseGithubPlugin::GithubBadges::COMMITTER_BADGE_NAME_SILVER)
 
       silver_comitter_badge.update!(enabled: true)
       DiscourseGithubPlugin::GithubBadges.grant!

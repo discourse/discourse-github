@@ -6,9 +6,9 @@ module DiscourseGithubPlugin
     BADGE_NAME_SILVER ||= 'Great Contributor'
     BADGE_NAME_GOLD   ||= 'Amazing Contributor'
 
-    COMMITER_BADGE_NAME_BRONZE ||= 'Committer'
-    COMMITER_BADGE_NAME_SILVER ||= 'Frequent Committer'
-    COMMITER_BADGE_NAME_GOLD   ||= 'Amazing Committer'
+    COMMITTER_BADGE_NAME_BRONZE ||= 'Committer'
+    COMMITTER_BADGE_NAME_SILVER ||= 'Frequent Committer'
+    COMMITTER_BADGE_NAME_GOLD   ||= 'Amazing Committer'
 
     class Granter
       def initialize(emails)
@@ -126,22 +126,22 @@ module DiscourseGithubPlugin
     end
 
     def self.committer_badges
-      unless bronze = Badge.find_by(name: COMMITER_BADGE_NAME_BRONZE)
-        bronze = Badge.create!(name: COMMITER_BADGE_NAME_BRONZE,
+      unless bronze = Badge.find_by(name: COMMITTER_BADGE_NAME_BRONZE)
+        bronze = Badge.create!(name: COMMITTER_BADGE_NAME_BRONZE,
                                description: 'Created a commit',
                                enabled: false,
                                badge_type_id: 3)
       end
 
-      unless silver = Badge.find_by(name: COMMITER_BADGE_NAME_SILVER)
-        silver = Badge.create!(name: COMMITER_BADGE_NAME_SILVER,
+      unless silver = Badge.find_by(name: COMMITTER_BADGE_NAME_SILVER)
+        silver = Badge.create!(name: COMMITTER_BADGE_NAME_SILVER,
                                description: 'Created 25 commits',
                                enabled: false,
                                badge_type_id: 2)
       end
 
-      unless gold = Badge.find_by(name: COMMITER_BADGE_NAME_GOLD)
-        gold = Badge.create!(name: COMMITER_BADGE_NAME_GOLD,
+      unless gold = Badge.find_by(name: COMMITTER_BADGE_NAME_GOLD)
+        gold = Badge.create!(name: COMMITTER_BADGE_NAME_GOLD,
                              description: 'Created 1000 commits',
                              enabled: false,
                              badge_type_id: 1)
