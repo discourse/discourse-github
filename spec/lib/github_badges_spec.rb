@@ -87,7 +87,7 @@ describe DiscourseGithubPlugin::GithubBadges do
     end
 
     it 'granted correctly' do
-      # inital run to seed badges and then enable them
+      # initial run to seed badges and then enable them
       DiscourseGithubPlugin::GithubBadges.grant!
 
       contributor_bronze = DiscourseGithubPlugin::GithubBadges::BADGE_NAME_BRONZE
