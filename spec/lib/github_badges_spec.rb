@@ -138,5 +138,12 @@ describe DiscourseGithubPlugin::GithubBadges do
       DiscourseGithubPlugin::GithubBadges.grant!
       expect(silver_user.reload.title).to eq(silver_committer_badge.name)
     end
+
+    it 'updates existing badges' do
+      badge = Badge.create!(name: 'Great contributor', badge_type_id: 2)
+      DiscourseGithubPlugin::GithubBadges.contributor_badges
+
+      expect(badge.reload.name).to eq('Great Contributor')
+    end
   end
 end

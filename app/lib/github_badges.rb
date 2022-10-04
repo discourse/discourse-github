@@ -106,8 +106,13 @@ module DiscourseGithubPlugin
 
     def self.ensure_badge(name, attrs)
       badge = Badge.find_by("name ILIKE ?", name)
-      badge ||= Badge.create!(name: name, **attrs)
-      badge
+
+      # Check for letter-case differences
+      if badge && badge.name != name
+        badge.update!(name: name)
+      end
+
+      badge || Badge.create!(name: name, **attrs)
     end
 
     def self.contributor_badges
