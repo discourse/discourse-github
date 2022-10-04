@@ -105,47 +105,49 @@ module DiscourseGithubPlugin
     end
 
     def self.contributor_badges
-      unless bronze = Badge.find_by(name: BADGE_NAME_BRONZE)
-        bronze = Badge.create!(name: BADGE_NAME_BRONZE,
-                               description: 'Contributed an accepted pull request',
-                               badge_type_id: 3)
-      end
+      bronze = Badge.find_by("name ILIKE ?", BADGE_NAME_BRONZE)
+      bronze ||= Badge.create!(name: BADGE_NAME_BRONZE,
+        description: 'Contributed an accepted pull request',
+        badge_type_id: 3
+      )
 
-      unless silver = Badge.find_by(name: BADGE_NAME_SILVER)
-        silver = Badge.create!(name: BADGE_NAME_SILVER,
-                               description: 'Contributed 25 accepted pull requests',
-                               badge_type_id: 2)
-      end
+      silver = Badge.find_by("name ILIKE ?", BADGE_NAME_SILVER)
+      silver ||= Badge.create!(name: BADGE_NAME_SILVER,
+        description: 'Contributed 25 accepted pull requests',
+        badge_type_id: 2
+      )
 
-      unless gold = Badge.find_by(name: BADGE_NAME_GOLD)
-        gold = Badge.create!(name: BADGE_NAME_GOLD,
-                             description: 'Contributed 250 accepted pull requests',
-                             badge_type_id: 1)
-      end
+      gold = Badge.find_by("name ILIKE ?", BADGE_NAME_GOLD)
+      gold ||= Badge.create!(name: BADGE_NAME_GOLD,
+        description: 'Contributed 250 accepted pull requests',
+        badge_type_id: 1
+      )
+
       [bronze, silver, gold]
     end
 
     def self.committer_badges
-      unless bronze = Badge.find_by(name: COMMITTER_BADGE_NAME_BRONZE)
-        bronze = Badge.create!(name: COMMITTER_BADGE_NAME_BRONZE,
-                               description: 'Created a commit',
-                               enabled: false,
-                               badge_type_id: 3)
-      end
+      bronze = Badge.find_by("name ILIKE ?", COMMITTER_BADGE_NAME_BRONZE)
+      bronze ||= Badge.create!(name: COMMITTER_BADGE_NAME_BRONZE,
+        description: 'Created a commit',
+        enabled: false,
+        badge_type_id: 3
+      )
 
-      unless silver = Badge.find_by(name: COMMITTER_BADGE_NAME_SILVER)
-        silver = Badge.create!(name: COMMITTER_BADGE_NAME_SILVER,
-                               description: 'Created 25 commits',
-                               enabled: false,
-                               badge_type_id: 2)
-      end
+      silver = Badge.find_by("name ILIKE ?", COMMITTER_BADGE_NAME_SILVER)
+      silver ||= Badge.create!(name: COMMITTER_BADGE_NAME_SILVER,
+        description: 'Created 25 commits',
+        enabled: false,
+        badge_type_id: 2
+      )
 
-      unless gold = Badge.find_by(name: COMMITTER_BADGE_NAME_GOLD)
-        gold = Badge.create!(name: COMMITTER_BADGE_NAME_GOLD,
-                             description: 'Created 1000 commits',
-                             enabled: false,
-                             badge_type_id: 1)
-      end
+      gold = Badge.find_by("name ILIKE ?", COMMITTER_BADGE_NAME_GOLD)
+      gold ||= Badge.create!(name: COMMITTER_BADGE_NAME_GOLD,
+        description: 'Created 1000 commits',
+        enabled: false,
+        badge_type_id: 1
+      )
+
       [bronze, silver, gold]
     end
   end
