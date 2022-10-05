@@ -87,12 +87,12 @@ describe DiscourseGithubPlugin::GithubBadges do
     end
 
     it 'granted correctly' do
-      # inital run to seed badges and then enable them
+      # initial run to seed badges and then enable them
       DiscourseGithubPlugin::GithubBadges.grant!
 
       contributor_bronze = DiscourseGithubPlugin::GithubBadges::BADGE_NAME_BRONZE
-      committer_bronze = DiscourseGithubPlugin::GithubBadges::COMMITER_BADGE_NAME_BRONZE
-      committer_silver = DiscourseGithubPlugin::GithubBadges::COMMITER_BADGE_NAME_SILVER
+      committer_bronze = DiscourseGithubPlugin::GithubBadges::COMMITTER_BADGE_NAME_BRONZE
+      committer_silver = DiscourseGithubPlugin::GithubBadges::COMMITTER_BADGE_NAME_SILVER
 
       users = [
         bronze_user,
@@ -128,15 +128,22 @@ describe DiscourseGithubPlugin::GithubBadges do
 
     it 'does not update user title if badge is not allowed to be used as a title' do
       DiscourseGithubPlugin::GithubBadges.grant!
-      silver_comitter_badge = Badge.find_by(name: DiscourseGithubPlugin::GithubBadges::COMMITER_BADGE_NAME_SILVER)
+      silver_committer_badge = Badge.find_by(name: DiscourseGithubPlugin::GithubBadges::COMMITTER_BADGE_NAME_SILVER)
 
-      silver_comitter_badge.update!(enabled: true)
+      silver_committer_badge.update!(enabled: true)
       DiscourseGithubPlugin::GithubBadges.grant!
       expect(silver_user.reload.title).to eq(nil)
 
-      silver_comitter_badge.update!(allow_title: true)
+      silver_committer_badge.update!(allow_title: true)
       DiscourseGithubPlugin::GithubBadges.grant!
-      expect(silver_user.reload.title).to eq(silver_comitter_badge.name)
+      expect(silver_user.reload.title).to eq(silver_committer_badge.name)
+    end
+
+    it 'updates existing badges' do
+      badge = Badge.create!(name: 'Great contributor', badge_type_id: 2)
+      DiscourseGithubPlugin::GithubBadges.contributor_badges
+
+      expect(badge.reload.name).to eq('Great Contributor')
     end
   end
 end

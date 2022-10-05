@@ -3,12 +3,12 @@
 module DiscourseGithubPlugin
   module GithubBadges
     BADGE_NAME_BRONZE ||= 'Contributor'
-    BADGE_NAME_SILVER ||= 'Great contributor'
-    BADGE_NAME_GOLD   ||= 'Amazing contributor'
+    BADGE_NAME_SILVER ||= 'Great Contributor'
+    BADGE_NAME_GOLD   ||= 'Amazing Contributor'
 
-    COMMITER_BADGE_NAME_BRONZE ||= 'Committer'
-    COMMITER_BADGE_NAME_SILVER ||= 'Frequent committer'
-    COMMITER_BADGE_NAME_GOLD   ||= 'Amazing committer'
+    COMMITTER_BADGE_NAME_BRONZE ||= 'Committer'
+    COMMITTER_BADGE_NAME_SILVER ||= 'Frequent Committer'
+    COMMITTER_BADGE_NAME_GOLD   ||= 'Amazing Committer'
 
     class Granter
       def initialize(emails)
@@ -104,48 +104,55 @@ module DiscourseGithubPlugin
       granter.grant!
     end
 
+    def self.ensure_badge(name, attrs)
+      badge = Badge.find_by("name ILIKE ?", name)
+
+      # Check for letter-case differences
+      if badge && badge.name != name
+        badge.update!(name: name)
+      end
+
+      badge || Badge.create!(name: name, **attrs)
+    end
+
     def self.contributor_badges
-      unless bronze = Badge.find_by(name: BADGE_NAME_BRONZE)
-        bronze = Badge.create!(name: BADGE_NAME_BRONZE,
-                               description: 'contributed an accepted pull request',
-                               badge_type_id: 3)
-      end
+      bronze = ensure_badge(BADGE_NAME_BRONZE,
+        description: 'Contributed an accepted pull request',
+        badge_type_id: 3
+      )
 
-      unless silver = Badge.find_by(name: BADGE_NAME_SILVER)
-        silver = Badge.create!(name: BADGE_NAME_SILVER,
-                               description: 'contributed 25 accepted pull requests',
-                               badge_type_id: 2)
-      end
+      silver = ensure_badge(BADGE_NAME_SILVER,
+        description: 'Contributed 25 accepted pull requests',
+        badge_type_id: 2
+      )
 
-      unless gold = Badge.find_by(name: BADGE_NAME_GOLD)
-        gold = Badge.create!(name: BADGE_NAME_GOLD,
-                             description: 'contributed 250 accepted pull requests',
-                             badge_type_id: 1)
-      end
+      gold = ensure_badge(BADGE_NAME_GOLD,
+        description: 'Contributed 250 accepted pull requests',
+        badge_type_id: 1
+      )
+
       [bronze, silver, gold]
     end
 
     def self.committer_badges
-      unless bronze = Badge.find_by(name: COMMITER_BADGE_NAME_BRONZE)
-        bronze = Badge.create!(name: COMMITER_BADGE_NAME_BRONZE,
-                               description: 'created a commit',
-                               enabled: false,
-                               badge_type_id: 3)
-      end
+      bronze = ensure_badge(COMMITTER_BADGE_NAME_BRONZE,
+        description: 'Created a commit',
+        enabled: false,
+        badge_type_id: 3
+      )
 
-      unless silver = Badge.find_by(name: COMMITER_BADGE_NAME_SILVER)
-        silver = Badge.create!(name: COMMITER_BADGE_NAME_SILVER,
-                               description: 'created 25 commits',
-                               enabled: false,
-                               badge_type_id: 2)
-      end
+      silver = ensure_badge(COMMITTER_BADGE_NAME_SILVER,
+        description: 'Created 25 commits',
+        enabled: false,
+        badge_type_id: 2
+      )
 
-      unless gold = Badge.find_by(name: COMMITER_BADGE_NAME_GOLD)
-        gold = Badge.create!(name: COMMITER_BADGE_NAME_GOLD,
-                             description: 'created 1000 commits',
-                             enabled: false,
-                             badge_type_id: 1)
-      end
+      gold = ensure_badge(COMMITTER_BADGE_NAME_GOLD,
+        description: 'Created 1000 commits',
+        enabled: false,
+        badge_type_id: 1
+      )
+
       [bronze, silver, gold]
     end
   end
