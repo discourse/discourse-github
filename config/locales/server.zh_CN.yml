@@ -10,6 +10,7 @@ zh_CN:
     github_linkback_enabled: "将 GitHub 议题链接回论坛讨论"
     github_linkback_projects: "待链接回的项目列表"
     github_linkback_access_token: '一个有效访问令牌，用于将发布反向链接的用户以及计算提交/贡献以授予徽章。有关如何获取令牌的说明，请参阅<a href="https://meta.discourse.org/t/99895">此处</a>。'
+    github_linkback_maximum_links: "从单个帖子创建的最大反向链接数。当帖子包含更多链接时，将不会创建任何链接。"
     github_permalinks_enabled: "启用 GitHub 永久链接覆盖"
     github_permalinks_exclude: "应从永久链接覆盖中排除的文件名或目录。仅提供文件名或完整路径：user/repository/optional-directory/filename"
     github_badges_enabled: "启用 GitHub 徽章"
