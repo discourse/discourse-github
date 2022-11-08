@@ -10,6 +10,7 @@ fr:
     github_linkback_enabled: "Relier les problèmes de GitHub aux discussions du forum"
     github_linkback_projects: "Liste des projets à partir desquels effectuer le lien"
     github_linkback_access_token: 'Un jeton d''accès valide pour l''utilisateur qui publiera le lien et pour compter les commits/contributions pour accorder des badges. Consultez <a href="https://meta.discourse.org/t/99895">cette page</a> pour savoir comment obtenir un jeton.'
+    github_linkback_maximum_links: "Nombre maximal de liens à créer à partir d'un seul message. Lorsqu'un message contient plus de liens, aucun d'entre eux n'est créé."
     github_permalinks_enabled: "Activer les écrasements de permaliens GitHub"
     github_permalinks_exclude: "Nom de fichier ou répertoire à exclure des remplacements de permaliens. Indiquez uniquement le nom de fichier ou le chemin d'accès complet : user/repository/optional-directory/filename"
     github_badges_enabled: "Activer les badges GitHub"
