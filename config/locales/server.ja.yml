@@ -10,6 +10,7 @@ ja:
     github_linkback_enabled: "GitHub の課題をフォーラムディスカッションにバックリンクする"
     github_linkback_projects: "バックリンクするプロジェクトのリスト"
     github_linkback_access_token: 'バックリンクを投稿するユーザー用とバッジを付与するためのコミット数/貢献数をカウントするための有効なアクセストークン。トークンの取得方法については、<a href="https://meta.discourse.org/t/99895">こちら</a>をご覧ください。'
+    github_linkback_maximum_links: "1 つの投稿から作成できるリンクバックの最大数。投稿に複数のリンクが含まれる場合は、何も作成されません。"
     github_permalinks_enabled: "GitHub パーマリンクの上書きを有効にする"
     github_permalinks_exclude: "パーマリンクの上書きから除外する必要のあるファイル名またはディレクトリ。ファイル名のみ、またはフルパス（user/repository/optional-directory/filename）を指定します"
     github_badges_enabled: "GitHub バッジを有効にする"

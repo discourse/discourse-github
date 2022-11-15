@@ -10,6 +10,7 @@ fi:
     github_linkback_enabled: "Liitä GitHub-ongelmat foorumin keskusteluihin"
     github_linkback_projects: "Luettelo projekteista, joista voit linkittää takaisin"
     github_linkback_access_token: 'Kelvollinen käyttöoikeustietue käyttäjälle, joka julkaisee paluulinkin, ja solmujen/kontribuutioiden laskemiseen kunniamerkkien myöntämiseksi. Katso ohjeita tietueen saamiseen <a href="https://meta.discourse.org/t/99895">täältä</a>.'
+    github_linkback_maximum_links: "Yhdestä viestistä julkaistavien paluulinkkien enimmäismäärä. Kun viesti sisältää enemmän linkkejä, yhtään ei luoda."
     github_permalinks_enabled: "Ota GitHubin pysyvien linkkien korvaaminen käyttöön"
     github_permalinks_exclude: "Tiedostonimi tai hakemisto, joka tulee sulkea pois pysyvien linkkien korvaamisesta. Anna vain tiedostonimi tai täydellinen polku: käyttäjä/tietovarasto/valinnainen-hakemisto/tiedostonimi"
     github_badges_enabled: "Ota GitHub-kunniamerkit käyttöön"
