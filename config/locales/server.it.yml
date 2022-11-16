@@ -10,6 +10,7 @@ it:
     github_linkback_enabled: "Collega i problemi di Github alle relative discussioni sul forum"
     github_linkback_projects: "Elenco dei progetti da collegare al forum"
     github_linkback_access_token: 'Un token di accesso valido per l''utente che pubblicherà il linkback e per il conteggio dei commit/contributi per la concessione di distintivi. Consulta <a href="https://meta.discourse.org/t/99895">qui</a> le istruzioni per ottenere un token.'
+    github_linkback_maximum_links: "Numero massimo di linkback da creare da un singolo messaggio. Quando un messaggio contiene più link, non ne viene creato nessuno."
     github_permalinks_enabled: "Abilita le sovrascritture dei collegamenti GitHub permanenti"
     github_permalinks_exclude: "Nome del file o directory che dovrebbe essere esclusa dalle sovrascritture dei collegamenti permanenti. Fornisci solo il nome del file o il percorso completo: user/repository/optional-directory/filename"
     github_badges_enabled: "Abilita distintivi GitHub"

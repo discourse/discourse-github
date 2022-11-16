@@ -10,6 +10,7 @@ pt_BR:
     github_linkback_enabled: "O link do Github envia de volta para discussões do fórum"
     github_linkback_projects: "Lista de projetos para fazer linkback"
     github_linkback_access_token: 'Um token de acesso válido para o(a) usuário(a) que postar o linkback e contar confirmações/contribuições para conceder emblemas. Acesse <a href="https://meta.discourse.org/t/99895">aqui</a> para obter instruções de como receber um token.'
+    github_linkback_maximum_links: "Número máximo de linkbacks para criar a partir de uma única postagem. Quando uma postagem contiver mais links, nenhum será criado."
     github_permalinks_enabled: "Ativar substituições de permalink do GitHub"
     github_permalinks_exclude: "Diretório ou nome do arquivo que deve ser excluído das substituições de permalink. Informe apenas o nome do arquivo ou caminho completo: user/repository/optional-directory/filename"
     github_badges_enabled: "Ativar emblemas do GitHub"
