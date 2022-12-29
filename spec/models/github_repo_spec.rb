@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe DiscourseGithubPlugin::GithubRepo do
-
   it "strips .git from url" do
     SiteSetting.github_badges_repos = "https://github.com/discourse/discourse.git"
     repo = DiscourseGithubPlugin::GithubRepo.repos.first

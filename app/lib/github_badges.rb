@@ -2,13 +2,13 @@
 
 module DiscourseGithubPlugin
   module GithubBadges
-    BADGE_NAME_BRONZE ||= 'Contributor'
-    BADGE_NAME_SILVER ||= 'Great Contributor'
-    BADGE_NAME_GOLD   ||= 'Amazing Contributor'
+    BADGE_NAME_BRONZE ||= "Contributor"
+    BADGE_NAME_SILVER ||= "Great Contributor"
+    BADGE_NAME_GOLD ||= "Amazing Contributor"
 
-    COMMITTER_BADGE_NAME_BRONZE ||= 'Committer'
-    COMMITTER_BADGE_NAME_SILVER ||= 'Frequent Committer'
-    COMMITTER_BADGE_NAME_GOLD   ||= 'Amazing Committer'
+    COMMITTER_BADGE_NAME_BRONZE ||= "Committer"
+    COMMITTER_BADGE_NAME_SILVER ||= "Frequent Committer"
+    COMMITTER_BADGE_NAME_GOLD ||= "Amazing Committer"
 
     class Granter
       def initialize(emails)
@@ -37,17 +37,20 @@ module DiscourseGithubPlugin
         end
 
         user_emails = {}
-        User.real.where(staged: false).with_email(regular_emails).each do |user|
-          user_emails[user] = user.emails
-        end
+        User
+          .real
+          .where(staged: false)
+          .with_email(regular_emails)
+          .each { |user| user_emails[user] = user.emails }
 
         if github_name_email.any?
-          screen_names = UserAssociatedAccount
-            .where(provider_name: "github")
-            .where("info ->> 'nickname' IN (?)", github_name_email.keys)
-            .includes(:user)
-            .map { |row| [row.user, row.info["nickname"]] }
-            .to_h
+          screen_names =
+            UserAssociatedAccount
+              .where(provider_name: "github")
+              .where("info ->> 'nickname' IN (?)", github_name_email.keys)
+              .includes(:user)
+              .map { |row| [row.user, row.info["nickname"]] }
+              .to_h
 
           screen_names.each do |user, screen_name|
             user_emails[user] ||= []
@@ -60,9 +63,7 @@ module DiscourseGithubPlugin
           @badges.each do |badge, as_title, threshold|
             if commits_count >= threshold && badge.enabled? && SiteSetting.enable_badges
               BadgeGranter.grant(badge, user)
-              if badge.allow_title? && user.title.blank? && as_title
-                user.update!(title: badge.name)
-              end
+              user.update!(title: badge.name) if badge.allow_title? && user.title.blank? && as_title
             end
           end
         end
@@ -75,10 +76,10 @@ module DiscourseGithubPlugin
     end
 
     def self.grant_committer_badges!
-      emails = GithubCommit.where(
-        merge_commit: false,
-        role_id: CommitsPopulator::ROLES[:committer]
-      ).pluck(:email)
+      emails =
+        GithubCommit.where(merge_commit: false, role_id: CommitsPopulator::ROLES[:committer]).pluck(
+          :email,
+        )
 
       bronze, silver, gold = committer_badges
 
@@ -90,16 +91,21 @@ module DiscourseGithubPlugin
     end
 
     def self.grant_contributor_badges!
-      emails = GithubCommit.where(
-        merge_commit: false,
-        role_id: CommitsPopulator::ROLES[:contributor]
-      ).pluck(:email)
+      emails =
+        GithubCommit.where(
+          merge_commit: false,
+          role_id: CommitsPopulator::ROLES[:contributor],
+        ).pluck(:email)
 
       bronze, silver, gold = contributor_badges
 
       granter = GithubBadges::Granter.new(emails)
       granter.add_badge(bronze, as_title: false, threshold: 1)
-      granter.add_badge(silver, as_title: true, threshold: SiteSetting.github_silver_badge_min_commits)
+      granter.add_badge(
+        silver,
+        as_title: true,
+        threshold: SiteSetting.github_silver_badge_min_commits,
+      )
       granter.add_badge(gold, as_title: true, threshold: SiteSetting.github_gold_badge_min_commits)
       granter.grant!
     end
@@ -108,50 +114,60 @@ module DiscourseGithubPlugin
       badge = Badge.find_by("name ILIKE ?", name)
 
       # Check for letter-case differences
-      if badge && badge.name != name
-        badge.update!(name: name)
-      end
+      badge.update!(name: name) if badge && badge.name != name
 
       badge || Badge.create!(name: name, **attrs)
     end
 
     def self.contributor_badges
-      bronze = ensure_badge(BADGE_NAME_BRONZE,
-        description: 'Contributed an accepted pull request',
-        badge_type_id: 3
-      )
+      bronze =
+        ensure_badge(
+          BADGE_NAME_BRONZE,
+          description: "Contributed an accepted pull request",
+          badge_type_id: 3,
+        )
 
-      silver = ensure_badge(BADGE_NAME_SILVER,
-        description: 'Contributed 25 accepted pull requests',
-        badge_type_id: 2
-      )
+      silver =
+        ensure_badge(
+          BADGE_NAME_SILVER,
+          description: "Contributed 25 accepted pull requests",
+          badge_type_id: 2,
+        )
 
-      gold = ensure_badge(BADGE_NAME_GOLD,
-        description: 'Contributed 250 accepted pull requests',
-        badge_type_id: 1
-      )
+      gold =
+        ensure_badge(
+          BADGE_NAME_GOLD,
+          description: "Contributed 250 accepted pull requests",
+          badge_type_id: 1,
+        )
 
       [bronze, silver, gold]
     end
 
     def self.committer_badges
-      bronze = ensure_badge(COMMITTER_BADGE_NAME_BRONZE,
-        description: 'Created a commit',
-        enabled: false,
-        badge_type_id: 3
-      )
+      bronze =
+        ensure_badge(
+          COMMITTER_BADGE_NAME_BRONZE,
+          description: "Created a commit",
+          enabled: false,
+          badge_type_id: 3,
+        )
 
-      silver = ensure_badge(COMMITTER_BADGE_NAME_SILVER,
-        description: 'Created 25 commits',
-        enabled: false,
-        badge_type_id: 2
-      )
+      silver =
+        ensure_badge(
+          COMMITTER_BADGE_NAME_SILVER,
+          description: "Created 25 commits",
+          enabled: false,
+          badge_type_id: 2,
+        )
 
-      gold = ensure_badge(COMMITTER_BADGE_NAME_GOLD,
-        description: 'Created 1000 commits',
-        enabled: false,
-        badge_type_id: 1
-      )
+      gold =
+        ensure_badge(
+          COMMITTER_BADGE_NAME_GOLD,
+          description: "Created 1000 commits",
+          enabled: false,
+          badge_type_id: 1,
+        )
 
       [bronze, silver, gold]
     end

@@ -4,12 +4,10 @@ module DiscourseGithubPlugin
   class CommitsPopulator
     MERGE_COMMIT_REGEX = /^Merge pull request/
     HISTORY_COMPLETE = "history-complete"
-    class GraphQLError < StandardError; end
+    class GraphQLError < StandardError
+    end
 
-    ROLES = {
-      committer: 0,
-      contributor: 1
-    }
+    ROLES = { committer: 0, contributor: 1 }
 
     class PaginatedCommits
       def initialize(octokit, repo, cursor: nil, page_size: 100)
@@ -17,9 +15,10 @@ module DiscourseGithubPlugin
         @repo = repo
         @cursor = cursor
         @page_size = page_size
-        raise ArgumentError, 'page_size arg must be <= 100' if page_size > 100
+        raise ArgumentError, "page_size arg must be <= 100" if page_size > 100
         if cursor && !cursor.match?(/^\h{40}\s(\d+)$/)
-          raise ArgumentError, 'cursor must be a 40-characters hex string followed by a space and a number'
+          raise ArgumentError,
+                "cursor must be a 40-characters hex string followed by a space and a number"
         end
         fetch_commits
       end
@@ -43,11 +42,9 @@ module DiscourseGithubPlugin
       private
 
       def fetch_commits
-        owner, name = @repo.name.split('/', 2)
+        owner, name = @repo.name.split("/", 2)
         history_args = "first: #{@page_size}"
-        if @cursor
-          history_args += ", after: #{@cursor.inspect}"
-        end
+        history_args += ", after: #{@cursor.inspect}" if @cursor
 
         query = <<~QUERY
           query {
@@ -94,7 +91,8 @@ module DiscourseGithubPlugin
 
     def initialize(repo)
       @repo = repo
-      @client = Octokit::Client.new(access_token: SiteSetting.github_linkback_access_token, per_page: 100)
+      @client =
+        Octokit::Client.new(access_token: SiteSetting.github_linkback_access_token, per_page: 100)
     end
 
     def populate!
@@ -137,29 +135,44 @@ module DiscourseGithubPlugin
       when Octokit::NotFound
         disable_github_badges_and_inform_admin(
           title: I18n.t("github_commits_populator.errors.repository_not_found_pm_title"),
-          raw: I18n.t("github_commits_populator.errors.repository_not_found_pm",
-                      repo_name: @repo.name,
-                      base_path: Discourse.base_path),
+          raw:
+            I18n.t(
+              "github_commits_populator.errors.repository_not_found_pm",
+              repo_name: @repo.name,
+              base_path: Discourse.base_path,
+            ),
         )
-        Rails.logger.warn("Disabled github_badges_enabled site setting due to repository Not Found error ")
+        Rails.logger.warn(
+          "Disabled github_badges_enabled site setting due to repository Not Found error ",
+        )
       when Octokit::Unauthorized
         disable_github_badges_and_inform_admin(
           title: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm_title"),
-          raw: I18n.t("github_commits_populator.errors.invalid_octokit_credentials_pm",
-                      base_path: Discourse.base_path),
+          raw:
+            I18n.t(
+              "github_commits_populator.errors.invalid_octokit_credentials_pm",
+              base_path: Discourse.base_path,
+            ),
         )
-        Rails.logger.warn("Disabled github_badges_enabled site setting due to invalid GitHub authentication credentials via github_linkback_access_token.")
+        Rails.logger.warn(
+          "Disabled github_badges_enabled site setting due to invalid GitHub authentication credentials via github_linkback_access_token.",
+        )
       else
         Rails.logger.warn("#{err.class}: #{err.message}")
       end
     rescue Octokit::InvalidRepository => err
       disable_github_badges_and_inform_admin(
         title: I18n.t("github_commits_populator.errors.repository_identifier_invalid_pm_title"),
-        raw: I18n.t("github_commits_populator.errors.repository_identifier_invalid_pm",
-                    repo_name: @repo.name,
-                    base_path: Discourse.base_path),
+        raw:
+          I18n.t(
+            "github_commits_populator.errors.repository_identifier_invalid_pm",
+            repo_name: @repo.name,
+            base_path: Discourse.base_path,
+          ),
       )
-      Rails.logger.warn("Disabled github_badges_enabled site setting due to invalid repository identifier")
+      Rails.logger.warn(
+        "Disabled github_badges_enabled site setting due to invalid repository identifier",
+      )
     end
 
     private
@@ -174,7 +187,8 @@ module DiscourseGithubPlugin
       batch = paginator.commits
       done = false
       commits = []
-      recent_commits = stop_at.present? ? [] : @repo.commits.order("committed_at DESC").first(100).pluck(:sha)
+      recent_commits =
+        stop_at.present? ? [] : @repo.commits.order("committed_at DESC").first(100).pluck(:sha)
       while !done
         batch.each do |c|
           if c.oid == stop_at || recent_commits.include?(c.oid)
@@ -199,7 +213,8 @@ module DiscourseGithubPlugin
     def removed?(sha)
       commit = @client.commit(@repo.name, sha)
       return true if commit.commit.nil?
-      found = @client.commits(@repo.name, until: commit.commit.committer.date, page: 1, per_page: 1).first
+      found =
+        @client.commits(@repo.name, until: commit.commit.committer.date, page: 1, per_page: 1).first
       commit.sha != found.sha
     end
 
@@ -230,7 +245,7 @@ module DiscourseGithubPlugin
       end
       DB.exec(<<~SQL)
         INSERT INTO github_commits
-        (repo_id, sha, email, committed_at, role_id, merge_commit, created_at, updated_at) VALUES #{fragments.join(',')}
+        (repo_id, sha, email, committed_at, role_id, merge_commit, created_at, updated_at) VALUES #{fragments.join(",")}
       SQL
     end
 
@@ -241,7 +256,7 @@ module DiscourseGithubPlugin
         repo_id: @repo.id,
         committed_at: commit.committedDate,
         merge_commit: commit.message.match?(MERGE_COMMIT_REGEX),
-        role_id: is_contribution?(commit) ? ROLES[:contributor] : ROLES[:committer]
+        role_id: is_contribution?(commit) ? ROLES[:contributor] : ROLES[:committer],
       }
     end
 
@@ -268,14 +283,15 @@ module DiscourseGithubPlugin
 
     def disable_github_badges_and_inform_admin(title:, raw:)
       SiteSetting.github_badges_enabled = false
-      site_admin_usernames = User.where(admin: true).human_users.order('last_seen_at DESC').limit(10).pluck(:username)
+      site_admin_usernames =
+        User.where(admin: true).human_users.order("last_seen_at DESC").limit(10).pluck(:username)
       PostCreator.create!(
         Discourse.system_user,
         title: title,
         raw: raw,
         archetype: Archetype.private_message,
         target_usernames: site_admin_usernames,
-        skip_validations: true
+        skip_validations: true,
       )
     end
   end

@@ -2,20 +2,23 @@
 
 module DiscourseGithubPlugin
   class GithubRepo < ActiveRecord::Base
-    VALID_URL_BASED_REPO_REGEX = /https?:\/\/github.com\/(.+)/
+    VALID_URL_BASED_REPO_REGEX = %r{https?://github.com/(.+)}
     VALID_USER_BASED_REPO_REGEX = Octokit::Repository::NAME_WITH_OWNER_PATTERN
 
     has_many :commits, foreign_key: :repo_id, class_name: :GithubCommit, dependent: :destroy
 
     def self.repos
       repos = []
-      SiteSetting.github_badges_repos.split("|").each do |link|
-        name = match_name_from_setting(link)
-        next if name.blank?
-        name.gsub!(/\.git$/, "")
-        name.gsub!(/\/$/, "") # Remove trailing '/'
-        repos << find_or_create_by!(name: name)
-      end
+      SiteSetting
+        .github_badges_repos
+        .split("|")
+        .each do |link|
+          name = match_name_from_setting(link)
+          next if name.blank?
+          name.gsub!(/\.git$/, "")
+          name.gsub!(%r{/$}, "") # Remove trailing '/'
+          repos << find_or_create_by!(name: name)
+        end
       repos
     end
 

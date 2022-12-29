@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe Jobs::CreateGithubLinkback do
-  before do
-    SiteSetting.github_linkback_enabled = true
-  end
+  before { SiteSetting.github_linkback_enabled = true }
 
   it "shouldn't raise error if post not found" do
     post = Fabricate(:post)
