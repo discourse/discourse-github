@@ -9,9 +9,7 @@ module DiscourseGithubPlugin
       return unless SiteSetting.github_badges_enabled?
       return unless SiteSetting.github_linkback_access_token.present?
 
-      GithubRepo.repos.each do |repo|
-        CommitsPopulator.new(repo).populate!
-      end
+      GithubRepo.repos.each { |repo| CommitsPopulator.new(repo).populate! }
       GithubBadges.grant!
     end
   end

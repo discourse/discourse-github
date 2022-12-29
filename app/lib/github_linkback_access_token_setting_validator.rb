@@ -8,9 +8,7 @@ class GithubLinkbackAccessTokenSettingValidator
   def valid_value?(val)
     return true if val.blank?
     client = Octokit::Client.new(access_token: val, per_page: 1)
-    DiscourseGithubPlugin::GithubRepo.repos.each do |repo|
-      client.branches(repo.name)
-    end
+    DiscourseGithubPlugin::GithubRepo.repos.each { |repo| client.branches(repo.name) }
     true
   rescue Octokit::Unauthorized
     false

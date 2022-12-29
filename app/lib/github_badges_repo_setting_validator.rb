@@ -7,10 +7,12 @@ class GithubBadgesRepoSettingValidator
 
   def valid_value?(val)
     return true if val.blank?
-    val.split("|").all? do |repo|
-      repo.match?(DiscourseGithubPlugin::GithubRepo::VALID_URL_BASED_REPO_REGEX) || \
-        repo.match?(DiscourseGithubPlugin::GithubRepo::VALID_USER_BASED_REPO_REGEX)
-    end
+    val
+      .split("|")
+      .all? do |repo|
+        repo.match?(DiscourseGithubPlugin::GithubRepo::VALID_URL_BASED_REPO_REGEX) ||
+          repo.match?(DiscourseGithubPlugin::GithubRepo::VALID_USER_BASED_REPO_REGEX)
+      end
   end
 
   def error_message

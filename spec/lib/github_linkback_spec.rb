@@ -1,19 +1,18 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe GithubLinkback do
-  let(:github_commit_link) { "https://github.com/discourse/discourse/commit/76981605fa10975e2e7af457e2f6a31909e0c811" }
+  let(:github_commit_link) do
+    "https://github.com/discourse/discourse/commit/76981605fa10975e2e7af457e2f6a31909e0c811"
+  end
   let(:github_commit_link_with_anchor) { "#{github_commit_link}#anchor" }
   let(:github_issue_link) { "https://github.com/discourse/discourse/issues/123" }
   let(:github_pr_link) { "https://github.com/discourse/discourse/pull/701" }
   let(:github_pr_files_link) { "https://github.com/discourse/discourse/pull/701/files" }
   let(:github_pr_link_wildcard) { "https://github.com/discourse/discourse-github-linkback/pull/3" }
 
-  let(:post) do
-    Fabricate(
-      :post,
-      raw: <<~RAW
+  let(:post) { Fabricate(:post, raw: <<~RAW) }
         cool post
 
         #{github_commit_link}
@@ -39,8 +38,6 @@ describe GithubLinkback do
         end_of_transmission
 
       RAW
-    )
-  end
 
   describe "#should_enqueue?" do
     let(:post_without_link) { Fabricate.build(:post, raw: "Hello github!") }
@@ -48,11 +45,16 @@ describe GithubLinkback do
       Fabricate.build(
         :post,
         post_type: Post.types[:small_action],
-        raw: 'https://github.com/discourse/discourse/commit/5be9bee2307dd517c26e6ef269471aceba5d5acf'
+        raw:
+          "https://github.com/discourse/discourse/commit/5be9bee2307dd517c26e6ef269471aceba5d5acf",
       )
     end
     let(:post_with_link) do
-      Fabricate.build(:post, raw: 'https://github.com/discourse/discourse/commit/5be9bee2307dd517c26e6ef269471aceba5d5acf')
+      Fabricate.build(
+        :post,
+        raw:
+          "https://github.com/discourse/discourse/commit/5be9bee2307dd517c26e6ef269471aceba5d5acf",
+      )
     end
 
     it "returns false when the feature is disabled" do
@@ -84,11 +86,12 @@ describe GithubLinkback do
       it "doesn't enqueue private messages" do
         SiteSetting.github_linkback_enabled = true
         private_topic = Fabricate(:private_message_topic)
-        private_post = Fabricate(
-          :post,
-          topic: private_topic,
-          raw: "this post http://github.com should not enqueue"
-        )
+        private_post =
+          Fabricate(
+            :post,
+            topic: private_topic,
+            raw: "this post http://github.com should not enqueue",
+          )
         expect(GithubLinkback.new(private_post).should_enqueue?).to eq(false)
       end
     end
@@ -97,11 +100,12 @@ describe GithubLinkback do
       it "doesn't enqueue unlisted topics" do
         SiteSetting.github_linkback_enabled = true
         unlisted_topic = Fabricate(:topic, visible: false)
-        unlisted_post = Fabricate(
-          :post,
-          topic: unlisted_topic,
-          raw: "this post http://github.com should not enqueue"
-        )
+        unlisted_post =
+          Fabricate(
+            :post,
+            topic: unlisted_topic,
+            raw: "this post http://github.com should not enqueue",
+          )
         expect(GithubLinkback.new(unlisted_post).should_enqueue?).to eq(false)
       end
     end
@@ -115,7 +119,8 @@ describe GithubLinkback do
     end
 
     it "doesn't return links that have already been posted" do
-      SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance|discourse/*"
+      SiteSetting.github_linkback_projects =
+        "discourse/discourse|eviltrout/ember-performance|discourse/*"
 
       post.custom_fields[GithubLinkback.field_for(github_commit_link)] = "true"
       post.custom_fields[GithubLinkback.field_for(github_issue_link)] = "true"
@@ -128,7 +133,8 @@ describe GithubLinkback do
     end
 
     it "should return the urls for the selected projects" do
-      SiteSetting.github_linkback_projects = "discourse/discourse|eviltrout/ember-performance|discourse/*"
+      SiteSetting.github_linkback_projects =
+        "discourse/discourse|eviltrout/ember-performance|discourse/*"
       links = GithubLinkback.new(post).github_links
       expect(links.size).to eq(4)
 
@@ -155,41 +161,44 @@ describe GithubLinkback do
   end
 
   describe "#create" do
-    before do
-      SiteSetting.github_linkback_projects = "discourse/discourse|discourse/*"
-    end
+    before { SiteSetting.github_linkback_projects = "discourse/discourse|discourse/*" }
 
     it "returns an empty array without an access token" do
       expect(GithubLinkback.new(post).create).to be_blank
     end
 
     context "with an access token" do
-      let(:headers) {
-        { 'Authorization' => 'token abcdef',
-          'Content-Type' => 'application/json',
-          'Host' => 'api.github.com',
-          'User-Agent' => 'Discourse-Github-Linkback' }
-      }
+      let(:headers) do
+        {
+          "Authorization" => "token abcdef",
+          "Content-Type" => "application/json",
+          "Host" => "api.github.com",
+          "User-Agent" => "Discourse-Github-Linkback",
+        }
+      end
 
       before do
         SiteSetting.github_linkback_access_token = "abcdef"
 
-        stub_request(:post, "https://api.github.com/repos/discourse/discourse/commits/76981605fa10975e2e7af457e2f6a31909e0c811/comments").
-          with(headers: headers).
-          to_return(status: 200, body: "", headers: {})
+        stub_request(
+          :post,
+          "https://api.github.com/repos/discourse/discourse/commits/76981605fa10975e2e7af457e2f6a31909e0c811/comments",
+        ).with(headers: headers).to_return(status: 200, body: "", headers: {})
 
-        stub_request(:post, "https://api.github.com/repos/discourse/discourse/issues/123/comments").
-          with(headers: headers).
-          to_return(status: 200, body: "", headers: {})
+        stub_request(
+          :post,
+          "https://api.github.com/repos/discourse/discourse/issues/123/comments",
+        ).with(headers: headers).to_return(status: 200, body: "", headers: {})
 
-        stub_request(:post, "https://api.github.com/repos/discourse/discourse/issues/701/comments").
-          with(headers: headers).
-          to_return(status: 200, body: "", headers: {})
+        stub_request(
+          :post,
+          "https://api.github.com/repos/discourse/discourse/issues/701/comments",
+        ).with(headers: headers).to_return(status: 200, body: "", headers: {})
 
-        stub_request(:post, "https://api.github.com/repos/discourse/discourse-github-linkback/issues/3/comments").
-          with(headers: headers).
-          to_return(status: 200, body: "", headers: {})
-
+        stub_request(
+          :post,
+          "https://api.github.com/repos/discourse/discourse-github-linkback/issues/3/comments",
+        ).with(headers: headers).to_return(status: 200, body: "", headers: {})
       end
 
       it "returns the URLs it linked to and creates custom fields" do
@@ -235,5 +244,4 @@ describe GithubLinkback do
       end
     end
   end
-
 end

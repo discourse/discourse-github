@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
-require 'net/http'
-require 'json'
-require 'uri'
+require "net/http"
+require "json"
+require "uri"
 
 module Jobs
-
   class ReplaceGithubNonPermalinks < ::Jobs::Base
-    sidekiq_options queue: 'low'
+    sidekiq_options queue: "low"
 
     def execute(args)
       return unless SiteSetting.enable_discourse_github_plugin?
@@ -22,7 +21,8 @@ module Jobs
       raw = post.raw.dup
       start_raw = raw.dup
 
-      regex = /github\.com\/(?<user>[^\/]+)\/(?<repo>[^\/\s]+)\/blob\/(?<sha1>[^\/\s]+)\/(?<file>[^#\s]+)(?<from-to>#(L([^-\s]*)(-L(\d*))?))?/i
+      regex =
+        %r{github\.com/(?<user>[^/]+)/(?<repo>[^/\s]+)/blob/(?<sha1>[^/\s]+)/(?<file>[^#\s]+)(?<from-to>#(L([^-\s]*)(-L(\d*))?))?}i
 
       matches = post.raw.scan(regex)
       matches.each do |user, repo, sha1, file, from_to|
@@ -38,7 +38,11 @@ module Jobs
             raw.sub!(old_url, new_url)
           end
         rescue => e
-          log(:error, "Failed to replace Github link with permalink in post #{post_id}\n" + e.message + "\n" + e.backtrace.join("\n"))
+          log(
+            :error,
+            "Failed to replace Github link with permalink in post #{post_id}\n" + e.message + "\n" +
+              e.backtrace.join("\n"),
+          )
         end
       end
 
@@ -76,15 +80,13 @@ module Jobs
       uri = URI(url)
       response = Net::HTTP.get_response(uri)
 
-      if response.kind_of? Net::HTTPSuccess
-        JSON.parse(response.body)
-      end
+      JSON.parse(response.body) if response.kind_of? Net::HTTPSuccess
     end
 
     def log(log_level, message)
       Rails.logger.public_send(
         log_level,
-        "#{RailsMultisite::ConnectionManagement.current_db}: #{message}"
+        "#{RailsMultisite::ConnectionManagement.current_db}: #{message}",
       )
     end
   end
