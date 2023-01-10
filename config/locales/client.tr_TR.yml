@@ -5,3 +5,5 @@
 # https://translate.discourse.org/
 
 tr_TR:
+  replace_github_link:
+    edit_reason: "Github bağlantısı kalıcı bir bağlantıyla değiştirildi"
