@@ -28,19 +28,19 @@ after_initialize do
     ../app/jobs/regular/replace_github_non_permalinks.rb
   ].each { |path| require File.expand_path(path, __FILE__) }
 
-  DiscourseEvent.on(:post_created) do |post|
+  on(:post_created) do |post|
     if SiteSetting.github_linkback_enabled? && SiteSetting.enable_discourse_github_plugin?
       GithubLinkback.new(post).enqueue
     end
   end
 
-  DiscourseEvent.on(:post_edited) do |post|
+  on(:post_edited) do |post|
     if SiteSetting.github_linkback_enabled? && SiteSetting.enable_discourse_github_plugin?
       GithubLinkback.new(post).enqueue
     end
   end
 
-  DiscourseEvent.on(:before_post_process_cooked) do |doc, post|
+  on(:before_post_process_cooked) do |doc, post|
     if SiteSetting.github_permalinks_enabled? && SiteSetting.enable_discourse_github_plugin?
       GithubPermalinks.replace_github_non_permalinks(post)
     end
