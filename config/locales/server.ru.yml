@@ -19,7 +19,7 @@ ru:
     github_gold_badge_min_commits: "Минимальное количество коммитов для получения золотого значка"
     errors:
       invalid_badge_repo: "Вы должны предоставить URL GitHub или имя репозитория в формате 'github_пользователь/название_репозитория'"
-      invalid_github_linkback_access_token: "Вы должны предоставить действующий токен доступа к GitHub linkback, который имеет доступ к указанным вами репозиториям с наградами."
+      invalid_github_linkback_access_token: "Необходимо указать действующий токен доступа к GitHub Linkback, который имеет доступ к указанным вами репозиториям с наградами."
   github_linkback:
     commit_template: |
       Этот коммит был упомянут в **%{title}**. Там могут быть соответствующие подробности:
@@ -35,28 +35,27 @@ ru:
       %{post_url}
   github_commits_populator:
     errors:
-      repository_identifier_invalid_pm_title: "Действия, необходимые для плагина discourse-github"
+      repository_identifier_invalid_pm_title: "Плагин «discourse-github» требует принятия мер"
       repository_identifier_invalid_pm: |
-        Репозиторий, указанный в плагине discourse-github, недействителен:
+        Репозиторий, указанный в плагине «discourse-github», недействителен:
         %{repo_name}
 
         Он должен быть указан как `пользователь/репозиторий`.
 
         Награды не будут выдаваться до тех пор, пока название не будет исправлено в
-        <a href="%{base_path}/admin/site_settings/category/plugins?filter=GitHub">настройках discourse-github</a>
-        и параметр 'github_badges_enabled' не будет снова включён.
-      repository_not_found_pm_title: "Действия, необходимые для плагина discourse-github"
+        <a href="%{base_path}/admin/site_settings/category/plugins?filter=GitHub">настройках «discourse-github»</a>
+        и параметр «github_badges_enabled» не будет снова включён.
+      repository_not_found_pm_title: "Плагин «discourse-github» требует принятия мер"
       repository_not_found_pm: |
-        Репозиторий, указанный в плагине discourse-github, выдаёт ошибку "Не найдено": %{repo_name}
+        Репозиторий, указанный в плагине discourse-github, выдаёт ошибку «Не найдено»: %{repo_name}
 
         Награды не будут выдаваться до тех пор, пока название не будет исправлено в
-        <a href="%{base_path}/admin/site_settings/category/plugins?filter=GitHub">настройках discourse-github</a>
-        и параметр 'github_badges_enabled' не будет снова включён.
-      invalid_octokit_credentials_pm_title: "Действия, необходимые для плагина discourse-github"
+        <a href="%{base_path}/admin/site_settings/category/plugins?filter=GitHub">настройках «discourse-github»</a>
+        и параметр «github_badges_enabled» не будет снова включён.
+      invalid_octokit_credentials_pm_title: "Плагин «discourse-github» требует принятия мер"
       invalid_octokit_credentials_pm: |
-        Учётные данные GitHub, предоставленные плагину discourse-github, недействительны. Настройка "включения значков github\
-        была отключена, и коммиты больше не будут заполняться, пока проблема не будет решена.
+        Учётные данные GitHub, предоставленные плагину «discourse-github», недействительны. Награды Github отключены, коммиты не будут заполняться, пока проблема не будет решена.
 
-        Проверьте настройку "токен доступа github linkback", чтобы убедиться, что токен правильный и имеет право доступа ко всем
-        репозиториям через
-        <a href="%{base_path}/admin/site_settings/category/plugins?filter=GitHub">настройки discourse-github</a>.
+        Проверьте настройку токена доступа Github Linkback: токен должен быть действителен и должен иметь право доступа ко всем
+        репозиториям — см.
+        <a href="%{base_path}/admin/site_settings/category/plugins?filter=GitHub">настройки «discourse-github»</a>.
