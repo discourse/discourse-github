@@ -15,6 +15,7 @@ class UpdateGithubBadgeIcons < ActiveRecord::Migration[7.0]
       SET icon = 'fab-git-alt'
       WHERE
         name IN (#{badges.map { |b| "'#{b}'" }.join(",")})
+        AND icon = 'fa-certificate'
     SQL
   end
 end
