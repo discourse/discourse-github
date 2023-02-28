@@ -125,6 +125,7 @@ module DiscourseGithubPlugin
           BADGE_NAME_BRONZE,
           description: "Contributed an accepted pull request",
           badge_type_id: 3,
+          default_icon: "fab-git-alt",
         )
 
       silver =
@@ -132,6 +133,7 @@ module DiscourseGithubPlugin
           BADGE_NAME_SILVER,
           description: "Contributed 25 accepted pull requests",
           badge_type_id: 2,
+          default_icon: "fab-git-alt",
         )
 
       gold =
@@ -139,6 +141,7 @@ module DiscourseGithubPlugin
           BADGE_NAME_GOLD,
           description: "Contributed 250 accepted pull requests",
           badge_type_id: 1,
+          default_icon: "fab-git-alt",
         )
 
       [bronze, silver, gold]
