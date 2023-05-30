@@ -5,3 +5,5 @@
 # https://translate.discourse.org/
 
 pl_PL:
+  replace_github_link:
+    edit_reason: "Link do Githuba został zastąpiony stałym linkiem"
