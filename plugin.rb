@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 # name: discourse-github
-# about: Github Linkback, Github Badges, Github Permalinks
+# about: Allows staff to assign badges to users based on GitHub contributions, and allows users to create Github Linkbacks and Permalinks
+# meta_topic_id: 99895
 # version: 0.3
 # authors: Robin Ward, Sam Saffron
 # url: https://github.com/discourse/discourse-github
