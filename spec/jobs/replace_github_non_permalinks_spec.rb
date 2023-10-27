@@ -44,7 +44,7 @@ describe Jobs::ReplaceGithubNonPermalinks do
 
   describe "#execute" do
     before do
-      SiteSetting.queue_jobs = false
+      Jobs.run_immediately!
       SiteSetting.github_permalinks_enabled = true
     end
 
