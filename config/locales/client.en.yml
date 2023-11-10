@@ -1,3 +1,9 @@
 en:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_github: "Discourse GitHub"
+en:
   replace_github_link:
     edit_reason: "Github link was replaced with a permanent link"
