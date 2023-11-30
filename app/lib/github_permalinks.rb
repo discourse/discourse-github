@@ -5,7 +5,7 @@ module ::GithubPermalinks
     # replaces github non-permalinks with permalinks containing a specific commit id
     regex = %r{https?://github\.com/[^/]+/[^/\s]+/blob/[^\s]+}i
     # don't replace urls in posts that are more than 1h old
-    return unless ((Time.zone.now - post.created_at) / 60).round <= 60
+    return if ((Time.zone.now - post.created_at) / 60).round > 60
     # only run the job when post is changed by a user and it contains a github url
     return if (post.last_editor_id && post.last_editor_id <= 0) || !post.raw.match(regex)
     # make sure no other job is scheduled

@@ -3,10 +3,11 @@
 require "rails_helper"
 
 describe DiscourseGithubPlugin::CommitsPopulator do
+  subject { described_class.new(repo) }
+
   let(:repo) { DiscourseGithubPlugin::GithubRepo.new(name: "discourse/discourse") }
   let!(:site_admin1) { Fabricate(:admin) }
   let!(:site_admin2) { Fabricate(:admin) }
-  subject { described_class.new(repo) }
 
   before { SiteSetting.github_badges_enabled = true }
 
