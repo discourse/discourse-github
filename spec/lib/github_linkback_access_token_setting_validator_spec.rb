@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe GithubLinkbackAccessTokenSettingValidator do
-  subject { described_class.new }
+  subject(:validator) { described_class.new }
 
   let(:value) { SecureRandom.hex(10) }
 
@@ -15,13 +15,13 @@ describe GithubLinkbackAccessTokenSettingValidator do
       end
 
       it "should fail" do
-        expect(subject.valid_value?(value)).to eq(false)
+        expect(validator.valid_value?(value)).to eq(false)
       end
     end
 
     context "when no Octokit::Unauthorized error is raised" do
       it "should pass, without repos defined" do
-        expect(subject.valid_value?(value)).to eq(true)
+        expect(validator.valid_value?(value)).to eq(true)
       end
 
       context "when there are repos defined" do
@@ -31,7 +31,7 @@ describe GithubLinkbackAccessTokenSettingValidator do
         end
 
         it "should pass if all the repos are accessible" do
-          expect(subject.valid_value?(value)).to eq(true)
+          expect(validator.valid_value?(value)).to eq(true)
         end
       end
     end

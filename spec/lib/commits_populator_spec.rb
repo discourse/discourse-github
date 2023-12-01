@@ -3,10 +3,11 @@
 require "rails_helper"
 
 describe DiscourseGithubPlugin::CommitsPopulator do
+  subject(:populator) { described_class.new(repo) }
+
   let(:repo) { DiscourseGithubPlugin::GithubRepo.new(name: "discourse/discourse") }
   let!(:site_admin1) { Fabricate(:admin) }
   let!(:site_admin2) { Fabricate(:admin) }
-  subject { described_class.new(repo) }
 
   before { SiteSetting.github_badges_enabled = true }
 
@@ -14,7 +15,7 @@ describe DiscourseGithubPlugin::CommitsPopulator do
     before { Octokit::Client.any_instance.expects(:branches).raises(Octokit::Unauthorized) }
 
     it "disables github badges and sends a PM to the admin of the site to inform them" do
-      subject.populate!
+      populator.populate!
       expect(SiteSetting.github_badges_enabled).to eq(false)
       sent_pm =
         Post
@@ -40,7 +41,7 @@ describe DiscourseGithubPlugin::CommitsPopulator do
     before { Octokit::Client.any_instance.expects(:branches).raises(Octokit::NotFound) }
 
     it "disables github badges and sends a PM to the admin of the site to inform them" do
-      subject.populate!
+      populator.populate!
       expect(SiteSetting.github_badges_enabled).to eq(false)
       sent_pm =
         Post
@@ -67,7 +68,7 @@ describe DiscourseGithubPlugin::CommitsPopulator do
     before { Octokit::Client.any_instance.expects(:branches).raises(Octokit::InvalidRepository) }
 
     it "disables github badges and sends a PM to the admin of the site to inform them" do
-      subject.populate!
+      populator.populate!
       expect(SiteSetting.github_badges_enabled).to eq(false)
       sent_pm =
         Post
@@ -94,7 +95,7 @@ describe DiscourseGithubPlugin::CommitsPopulator do
     before { Octokit::Client.any_instance.expects(:branches).raises(Octokit::Error) }
 
     it "simply logs the error and does nothing else" do
-      subject.populate!
+      populator.populate!
       expect(SiteSetting.github_badges_enabled).to eq(true)
     end
   end
@@ -135,7 +136,7 @@ describe DiscourseGithubPlugin::CommitsPopulator do
     end
 
     it "simply logs the error and does nothing else" do
-      expect { subject.populate! }.to raise_error(described_class::GraphQLError)
+      expect { populator.populate! }.to raise_error(described_class::GraphQLError)
     end
   end
 
@@ -144,7 +145,7 @@ describe DiscourseGithubPlugin::CommitsPopulator do
 
     it "early returns before attempting to execute any of the commit fetching, because the plugin likely disabled itself" do
       Octokit::Client.any_instance.expects(:branches).never
-      subject.populate!
+      populator.populate!
     end
   end
 end

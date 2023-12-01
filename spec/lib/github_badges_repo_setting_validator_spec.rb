@@ -3,14 +3,14 @@
 require "rails_helper"
 
 describe GithubBadgesRepoSettingValidator do
-  subject { described_class.new }
+  subject(:validator) { described_class.new }
 
   describe "#valid_value?" do
     context "when a github URL is provided" do
       let(:value) { "https://github.com/discourse/discourse/" }
 
       it "is ok" do
-        expect(subject.valid_value?(value)).to eq(true)
+        expect(validator.valid_value?(value)).to eq(true)
       end
     end
 
@@ -18,7 +18,7 @@ describe GithubBadgesRepoSettingValidator do
       let(:value) { "discourse/discourse-github" }
 
       it "is ok" do
-        expect(subject.valid_value?(value)).to eq(true)
+        expect(validator.valid_value?(value)).to eq(true)
       end
     end
 
@@ -26,7 +26,7 @@ describe GithubBadgesRepoSettingValidator do
       let(:value) { "some-repo" }
 
       it "is not ok" do
-        expect(subject.valid_value?(value)).to eq(false)
+        expect(validator.valid_value?(value)).to eq(false)
       end
     end
 
@@ -34,7 +34,7 @@ describe GithubBadgesRepoSettingValidator do
       let(:value) { "discourse/discourse-github|https://github.com/discourse/discourse/" }
 
       it "is ok" do
-        expect(subject.valid_value?(value)).to eq(true)
+        expect(validator.valid_value?(value)).to eq(true)
       end
     end
 
@@ -42,7 +42,7 @@ describe GithubBadgesRepoSettingValidator do
       let(:value) { "discourse/discourse-github|https://github.com/discourse/discourse/|bad-dog" }
 
       it "is not ok" do
-        expect(subject.valid_value?(value)).to eq(false)
+        expect(validator.valid_value?(value)).to eq(false)
       end
     end
   end
