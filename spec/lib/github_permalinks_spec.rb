@@ -3,13 +3,12 @@
 require "rails_helper"
 
 describe GithubPermalinks do
-  let(:cpp) { CookedPostProcessor.new(post) }
-
   context "when it doesn't contain github link to the file" do
     let(:post) { Fabricate(:post, raw: "there is no github link") }
+
     it "it does not run the job" do
       Jobs.expects(:cancel_scheduled_job).never
-      cpp.replace_github_non_permalinks
+      GithubPermalinks.replace_github_non_permalinks(post)
     end
   end
 
@@ -37,7 +36,7 @@ describe GithubPermalinks do
           bypass_bump: false,
         },
         at: Time.zone.now + delay,
-      ) { cpp.replace_github_non_permalinks }
+      ) { GithubPermalinks.replace_github_non_permalinks(post) }
     end
   end
 end
