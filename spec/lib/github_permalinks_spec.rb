@@ -8,7 +8,7 @@ describe GithubPermalinks do
 
     it "it does not run the job" do
       Jobs.expects(:cancel_scheduled_job).never
-      GithubPermalinks.replace_github_non_permalinks
+      GithubPermalinks.replace_github_non_permalinks(post)
     end
   end
 
@@ -36,7 +36,7 @@ describe GithubPermalinks do
           bypass_bump: false,
         },
         at: Time.zone.now + delay,
-      ) { GithubPermalinks.replace_github_non_permalinks }
+      ) { GithubPermalinks.replace_github_non_permalinks(post) }
     end
   end
 end
