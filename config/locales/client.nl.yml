@@ -5,5 +5,10 @@
 # https://translate.discourse.org/
 
 nl:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_github: "Discourse GitHub"
   replace_github_link:
     edit_reason: "Github-link is vervangen door een permanente link"

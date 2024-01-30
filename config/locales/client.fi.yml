@@ -5,5 +5,10 @@
 # https://translate.discourse.org/
 
 fi:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_github: "Discourse GitHub"
   replace_github_link:
     edit_reason: "Github-linkki korvattiin pysyvällä linkillä"

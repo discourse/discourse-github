@@ -5,5 +5,10 @@
 # https://translate.discourse.org/
 
 ru:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_github: "Плагин GitHub для Discourse"
   replace_github_link:
     edit_reason: "Ссылка на Github была заменена на постоянную ссылку"

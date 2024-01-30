@@ -5,5 +5,10 @@
 # https://translate.discourse.org/
 
 ar:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_github: "Discourse GitHub"
   replace_github_link:
     edit_reason: "تم استبدال رابط Github برابط دائم"
