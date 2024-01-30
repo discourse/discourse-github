@@ -5,5 +5,10 @@
 # https://translate.discourse.org/
 
 es:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_github: "GitHub de Discourse"
   replace_github_link:
     edit_reason: "El enlace de Github ha sido sustituido por un enlace permanente"
