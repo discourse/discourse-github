@@ -13,10 +13,10 @@ module Jobs
       return unless SiteSetting.github_permalinks_enabled?
 
       post_id = args[:post_id]
-      raise Discourse::InvalidParameters.new(:post_id) unless post_id.present?
+      raise Discourse::InvalidParameters.new(:post_id) if post_id.blank?
 
       post = Post.find_by(id: post_id)
-      return unless post.present?
+      return if post.blank?
 
       raw = post.raw.dup
       start_raw = raw.dup
