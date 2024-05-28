@@ -90,7 +90,7 @@ class GithubLinkback
   end
 
   def create
-    return [] unless SiteSetting.github_linkback_access_token.present?
+    return [] if SiteSetting.github_linkback_access_token.blank?
 
     links = []
 
