@@ -65,6 +65,7 @@ module DiscourseGithubPlugin
                 .includes(:user)
                 .map { |row| [row.user, row.value] }
                 .to_h
+          end
 
           screen_names.each do |user, screen_name|
             user_emails[user] ||= []
