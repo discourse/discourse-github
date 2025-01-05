@@ -11,6 +11,7 @@ en:
     github_badges_repos: "URLs of the GitHub repos to scan for contributions and commits"
     github_silver_badge_min_commits: "Minumum number of commits for silver badge"
     github_gold_badge_min_commits: "Minumum number of commits for gold badge"
+    github_user_custom_field: "Optional custom field that stores the GitHub username for verification"
 
     errors:
       invalid_badge_repo: "You must provide a GitHub URL or the repository name in the format github_user/repository_name"
