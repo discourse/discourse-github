@@ -97,7 +97,7 @@ module DiscourseGithubPlugin
 
       bronze, silver, gold = committer_badges
 
-      granter = GithubBadges::Granter.new(emails)
+      granter = GithubBadges::Granter.new(emails, SiteSetting.custom_user_field)
       granter.add_badge(bronze, as_title: false, threshold: 1)
       granter.add_badge(silver, as_title: true, threshold: 25)
       granter.add_badge(gold, as_title: true, threshold: 1000)
@@ -113,7 +113,7 @@ module DiscourseGithubPlugin
 
       bronze, silver, gold = contributor_badges
 
-      granter = GithubBadges::Granter.new(emails)
+      granter = GithubBadges::Granter.new(emails, SiteSetting.custom_user_field)
       granter.add_badge(bronze, as_title: false, threshold: 1)
       granter.add_badge(
         silver,
