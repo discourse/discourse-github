@@ -11,9 +11,12 @@ module DiscourseGithubPlugin
     COMMITTER_BADGE_NAME_GOLD ||= "Amazing Committer"
 
     class Granter
-      def initialize(emails)
+      def initialize(emails, custom_user_field)
         @emails = emails
         @badges = []
+        # The custom user field that stores the user's GitHub username, if
+        # specified.
+        @custom_user_field = custom_user_field
       end
 
       def add_badge(badge, as_title:, threshold:)
@@ -52,6 +55,18 @@ module DiscourseGithubPlugin
               .map { |row| [row.user, row.info["nickname"]] }
               .to_h
 
+          # If we don't have any screen names, look in the custom user field, if
+          # specified.
+          if screen_names.empty? && @custom_user_field
+            screen_names =
+              UserCustomField
+                .where(name: @custom_user_field)
+                .where("value IN (?)", github_name_email.keys)
+                .includes(:user)
+                .map { |row| [row.user, row.value] }
+                .to_h
+          end
+
           screen_names.each do |user, screen_name|
             user_emails[user] ||= []
             user_emails[user] << github_name_email[screen_name]
@@ -83,7 +98,7 @@ module DiscourseGithubPlugin
 
       bronze, silver, gold = committer_badges
 
-      granter = GithubBadges::Granter.new(emails)
+      granter = GithubBadges::Granter.new(emails, SiteSetting.github_user_custom_field)
       granter.add_badge(bronze, as_title: false, threshold: 1)
       granter.add_badge(silver, as_title: true, threshold: 25)
       granter.add_badge(gold, as_title: true, threshold: 1000)
@@ -99,7 +114,7 @@ module DiscourseGithubPlugin
 
       bronze, silver, gold = contributor_badges
 
-      granter = GithubBadges::Granter.new(emails)
+      granter = GithubBadges::Granter.new(emails, SiteSetting.github_user_custom_field)
       granter.add_badge(bronze, as_title: false, threshold: 1)
       granter.add_badge(
         silver,
