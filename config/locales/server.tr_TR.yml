@@ -1,10 +1,4 @@
-# WARNING: Never edit this file.
-# It will be overwritten when translations are pulled from Crowdin.
-#
-# To work with us on translations, join this project:
-# https://translate.discourse.org/
-
-tr_TR:
+tr:
   site_settings:
     enable_discourse_github_plugin: "discourse-github eklentisini etkinleştirin"
     github_linkback_enabled: "GitHub sorunlarını forum tartışmalarına geri bağlayın"
