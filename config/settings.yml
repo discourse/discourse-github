@@ -29,3 +29,5 @@ discourse_github:
   github_gold_badge_min_commits:
     default: 250
     min: 1
+  github_user_custom_field:
+    default: ""
