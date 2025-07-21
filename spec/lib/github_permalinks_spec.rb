@@ -3,6 +3,8 @@
 require "rails_helper"
 
 describe GithubPermalinks do
+  before { enable_current_plugin }
+
   context "when it doesn't contain github link to the file" do
     let(:post) { Fabricate(:post, raw: "there is no github link") }
 

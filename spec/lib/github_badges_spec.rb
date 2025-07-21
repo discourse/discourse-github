@@ -12,6 +12,8 @@ describe DiscourseGithubPlugin::GithubBadges do
   let(:merge_commit_user) { Fabricate(:user) }
   let(:staged_user) { Fabricate(:user, staged: true) }
 
+  before { enable_current_plugin }
+
   describe "committer and contributor badges" do
     before do
       roles = DiscourseGithubPlugin::CommitsPopulator::ROLES

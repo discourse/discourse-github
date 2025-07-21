@@ -5,6 +5,8 @@ require "rails_helper"
 describe GithubBadgesRepoSettingValidator do
   subject(:validator) { described_class.new }
 
+  before { enable_current_plugin }
+
   describe "#valid_value?" do
     context "when a github URL is provided" do
       let(:value) { "https://github.com/discourse/discourse/" }

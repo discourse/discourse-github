@@ -3,6 +3,8 @@
 require "rails_helper"
 
 describe DiscourseGithubPlugin::GithubRepo do
+  before { enable_current_plugin }
+
   it "strips .git from url" do
     SiteSetting.github_badges_repos = "https://github.com/discourse/discourse.git"
     repo = DiscourseGithubPlugin::GithubRepo.repos.first

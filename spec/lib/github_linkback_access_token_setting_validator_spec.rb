@@ -7,6 +7,8 @@ describe GithubLinkbackAccessTokenSettingValidator do
 
   let(:value) { SecureRandom.hex(10) }
 
+  before { enable_current_plugin }
+
   describe "#valid_value?" do
     context "when an Octokit::Unauthorized error is raised, meaning the access token cannot access a repo" do
       before do
