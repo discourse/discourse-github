@@ -21,6 +21,8 @@ describe Jobs::ReplaceGithubNonPermalinks do
   let(:github_response_body2) { { sha: "7e4edcfae8a3c0e664b836ee7c5f28b47853a2f8", commit: {} } }
 
   before do
+    enable_current_plugin
+
     stub_request(:get, "https://api.github.com/repos/test/onebox/commits/master").to_return(
       status: 200,
       body: github_response_body.to_json,

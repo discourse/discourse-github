@@ -39,6 +39,8 @@ describe GithubLinkback do
 
       RAW
 
+  before { enable_current_plugin }
+
   describe "#should_enqueue?" do
     let(:post_without_link) { Fabricate.build(:post, raw: "Hello github!") }
     let(:small_action_post) do

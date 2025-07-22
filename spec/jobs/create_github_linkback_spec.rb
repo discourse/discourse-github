@@ -3,7 +3,10 @@
 require "rails_helper"
 
 describe Jobs::CreateGithubLinkback do
-  before { SiteSetting.github_linkback_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.github_linkback_enabled = true
+  end
 
   it "shouldn't raise error if post not found" do
     post = Fabricate(:post)

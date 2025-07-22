@@ -9,7 +9,10 @@ describe DiscourseGithubPlugin::CommitsPopulator do
   let!(:site_admin1) { Fabricate(:admin) }
   let!(:site_admin2) { Fabricate(:admin) }
 
-  before { SiteSetting.github_badges_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.github_badges_enabled = true
+  end
 
   context "when invalid credentials have been provided for octokit" do
     before { Octokit::Client.any_instance.expects(:branches).raises(Octokit::Unauthorized) }
